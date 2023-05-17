@@ -1,0 +1,69 @@
+{
+  "project_info": {
+    "project_number": "697565956050",
+    "firebase_url": "https://balageru-97ca0-default-rtdb.firebaseio.com",
+    "project_id": "balageru-97ca0",
+    "storage_bucket": "balageru-97ca0.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:697565956050:android:f2709d35ae1b9cc7136a0b",
+        "android_client_info": {
+          "package_name": "com.example.balageru"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "697565956050-nce6thqjtbgm08kkk3o9n56b4rcri0hb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAic0DVtYmLj-9bfJWrpsmzoqepY54DaVU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "697565956050-nce6thqjtbgm08kkk3o9n56b4rcri0hb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:697565956050:android:3ea5b19190a3c7f3136a0b",
+        "android_client_info": {
+          "package_name": "com.example.balageru_user_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "697565956050-nce6thqjtbgm08kkk3o9n56b4rcri0hb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAic0DVtYmLj-9bfJWrpsmzoqepY54DaVU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "697565956050-nce6thqjtbgm08kkk3o9n56b4rcri0hb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

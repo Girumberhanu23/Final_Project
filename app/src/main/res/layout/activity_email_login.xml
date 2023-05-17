@@ -64,6 +64,7 @@
         app:layout_constraintVertical_bias="0.0">
 
         <EditText
+            android:id="@+id/email"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:layout_marginLeft="16dp"
@@ -79,6 +80,7 @@
             android:paddingHorizontal="16dp" />
 
         <EditText
+            android:id="@+id/password"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:layout_marginLeft="16dp"
