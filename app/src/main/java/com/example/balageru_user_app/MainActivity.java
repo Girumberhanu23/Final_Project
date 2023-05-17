@@ -19,6 +19,7 @@ import com.example.balageru_user_app.EmailLoginRegister.EmailLoginActivity;
 import com.example.balageru_user_app.EmailLoginRegister.EmailRegisterActivity;
 import com.example.balageru_user_app.Models.PlateModel;
 import com.example.balageru_user_app.PhoneLoginRegister.PhoneLoginActivity;
+import com.example.balageru_user_app.Sessions.SessionManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,12 +30,14 @@ public class MainActivity extends AppCompatActivity {
     private List<PlateModel> plateModelList;
     private PlateAdapter plateAdapter;
     private LinearLayout emailContinue, phoneContinue;
+    SessionManager sessionManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        sessionManager = new SessionManager(this);
         //////////////////hide status bar hide /////////////////
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         //////////////////hide status bar end///////////////////
@@ -113,5 +116,21 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
         finish();
 //        Animatoo.animateSwipeLeft(this);
+    }
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        if(sessionManager.isLogin())
+        {
+            Intent intent = new Intent(MainActivity.this, HomeActivity.class);
+            startActivity(intent);
+            finish();
+//            Animatoo.animateSwipeLeft(this);
+        }
+        else
+        {
+
+        }
     }
 }

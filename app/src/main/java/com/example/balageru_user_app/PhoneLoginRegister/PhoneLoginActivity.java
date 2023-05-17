@@ -21,11 +21,13 @@ import android.widget.Toast;
 import com.blogspot.atifsoftwares.animatoolib.Animatoo;
 import com.bumptech.glide.Glide;
 import com.example.balageru_user_app.EmailLoginRegister.EmailLoginActivity;
+import com.example.balageru_user_app.HomeActivity;
 import com.example.balageru_user_app.MainActivity;
 import com.example.balageru_user_app.OperationRetrofitApi.ApiClient;
 import com.example.balageru_user_app.OperationRetrofitApi.ApiInterface;
 import com.example.balageru_user_app.OperationRetrofitApi.Users;
 import com.example.balageru_user_app.R;
+import com.example.balageru_user_app.Sessions.SessionManager;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseException;
@@ -57,6 +59,7 @@ public class PhoneLoginActivity extends AppCompatActivity {
 
     ////////////////////////////////////////////
     ImageView dialog;
+    SessionManager sessionManager;
 
 
     @Override
@@ -69,6 +72,7 @@ public class PhoneLoginActivity extends AppCompatActivity {
         ////////hide status bar end///////
         apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
         mAuth = FirebaseAuth.getInstance();
+        sessionManager = new SessionManager(this);
 
         init();
     }
@@ -178,9 +182,12 @@ public class PhoneLoginActivity extends AppCompatActivity {
                 if(response.body().getResponse().equals("ok"))
                 {
                     user_id = response.body().getUserId();
-                    Toast.makeText(PhoneLoginActivity.this, user_id, Toast.LENGTH_SHORT).show();
+                    sessionManager.createSession(user_id);
 
-                    Toast.makeText(PhoneLoginActivity.this, "Logged in Successfully", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(PhoneLoginActivity.this, HomeActivity.class);
+                    startActivity(intent);
+                    finish();
+//                        Animatoo.animateSwipeLeft(PhoneLoginActivity.this)
                     dialog.setVisibility(View.GONE);
                 }
                 else if(response.body().getResponse().equals("no_account"))

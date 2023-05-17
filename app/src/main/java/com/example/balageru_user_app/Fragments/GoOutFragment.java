@@ -1,5 +1,6 @@
 package com.example.balageru_user_app.Fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -13,7 +14,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.balageru_user_app.MainActivity;
 import com.example.balageru_user_app.R;
+import com.example.balageru_user_app.Sessions.SessionManager;
 import com.google.android.material.navigation.NavigationView;
 
 /**
@@ -31,15 +34,17 @@ public class GoOutFragment extends Fragment implements  View.OnClickListener {
     ImageView navigationBar;
     NavigationView navigationView;
     private View view;
-    private RelativeLayout loginSignUp, bookmarks, eightMMGold;
+    private RelativeLayout bookmarks, eightMMGold;
     private TextView your_orders, favourite_orders, address_book, online_ordering_help, send_feedback, report_safety_emergency, rate_playstore;
-
+    SessionManager sessionManager;
+    private TextView login, logout;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_go_out, container, false);
+        sessionManager = new SessionManager(getContext());
 
         onSetNavigationDrawerEvents();
         return view;
@@ -52,7 +57,8 @@ public class GoOutFragment extends Fragment implements  View.OnClickListener {
 
         navigationBar = (ImageView) view.findViewById(R.id.navigationBar);
 
-        loginSignUp = (RelativeLayout) view.findViewById(R.id.relativeLayout2);
+        login = (TextView) view.findViewById(R.id.login);
+        logout = (TextView) view.findViewById(R.id.logout);
         bookmarks = (RelativeLayout) view.findViewById(R.id.relativeLayout3);
         eightMMGold = (RelativeLayout) view.findViewById(R.id.relativeLayout4);
 
@@ -67,7 +73,8 @@ public class GoOutFragment extends Fragment implements  View.OnClickListener {
 
 
         navigationBar.setOnClickListener(this);
-        loginSignUp.setOnClickListener(this);
+        login.setOnClickListener(this);
+        logout.setOnClickListener(this);
         bookmarks.setOnClickListener(this);
         eightMMGold.setOnClickListener(this);
 
@@ -87,8 +94,11 @@ public class GoOutFragment extends Fragment implements  View.OnClickListener {
             case R.id.navigationBar:
                 drawerLayout.openDrawer(navigationView, true);
                 break;
-            case R.id.relativeLayout2:
-                Toast.makeText(getContext(),"loginSignUp", Toast.LENGTH_SHORT).show();
+            case R.id.login:
+                Login();
+                break;
+            case R.id.logout:
+                Logout();
                 break;
             case R.id.relativeLayout3:
                 Toast.makeText(getContext(),"bookmarks", Toast.LENGTH_SHORT).show();
@@ -122,6 +132,35 @@ public class GoOutFragment extends Fragment implements  View.OnClickListener {
 
     private void showToast(String message){
         Toast.makeText(getContext(),message,Toast.LENGTH_SHORT).show();
+    }
+
+    private void Logout() {
+
+        sessionManager.editor.clear();
+        sessionManager.editor.commit();
+
+        Intent intent = new Intent(getContext(), MainActivity.class);
+        startActivity(intent);
+        getActivity().finish();
+//        Animatoo.animateSwipeRight(getContext());
+    }
+    private void Login() {
+
+        Intent intent = new Intent(getContext(), MainActivity.class);
+        startActivity(intent);
+        getActivity().finish();
+//        Animatoo.animateSwipeRight(getContext());
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        if(sessionManager.isLogin())
+        {
+            login.setVisibility(View.GONE);
+            logout.setVisibility(View.VISIBLE);
+        }
     }
 
 }

@@ -15,12 +15,14 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.blogspot.atifsoftwares.animatoolib.Animatoo;
+import com.example.balageru_user_app.HomeActivity;
 import com.example.balageru_user_app.MainActivity;
 import com.example.balageru_user_app.OperationRetrofitApi.ApiClient;
 import com.example.balageru_user_app.OperationRetrofitApi.ApiInterface;
 import com.example.balageru_user_app.OperationRetrofitApi.Users;
 import com.example.balageru_user_app.PhoneLoginRegister.PhoneRegisterActivity;
 import com.example.balageru_user_app.R;
+import com.example.balageru_user_app.Sessions.SessionManager;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -32,6 +34,7 @@ public class EmailRegisterActivity extends AppCompatActivity {
     private Button regBtn;
     public static ApiInterface apiInterface;
     String user_id;
+    SessionManager sessionManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +45,7 @@ public class EmailRegisterActivity extends AppCompatActivity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         ////////hide status bar end///////
         apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        sessionManager = new SessionManager(this);
 
         init();
     }
@@ -93,11 +97,13 @@ public class EmailRegisterActivity extends AppCompatActivity {
                     if (response.body().getResponse().equals("ok"))
                     {
                         user_id = response.body().getUserId();
+                        sessionManager.createSession(user_id);
 
-                        Toast.makeText(EmailRegisterActivity.this, user_id, Toast.LENGTH_SHORT).show();
-                        dialog.dismiss();
+                        Intent intent = new Intent(EmailRegisterActivity.this, HomeActivity.class);
+                        startActivity(intent);
+                        finish();
+//                        Animatoo.animateSwipeLeft(EmailRegisterActivity.this)
 
-                        Toast.makeText(EmailRegisterActivity.this, "Your Account has been Created.", Toast.LENGTH_SHORT).show();
                         dialog.dismiss();
                     }
                     else if (response.body().getResponse().equals("failed"))
