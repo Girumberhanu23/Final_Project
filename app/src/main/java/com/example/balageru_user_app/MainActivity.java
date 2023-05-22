@@ -5,37 +5,46 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
-import android.view.Window;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
 
-import com.blogspot.atifsoftwares.animatoolib.Animatoo;
 import com.example.balageru_user_app.Adapters.PlateAdapter;
 import com.example.balageru_user_app.EmailLoginRegister.EmailLoginActivity;
-import com.example.balageru_user_app.EmailLoginRegister.EmailRegisterActivity;
-import com.example.balageru_user_app.Models.PlateModel;
+import com.example.balageru_user_app.Models.CategoryModel;
+import com.example.balageru_user_app.OperationRetrofitApi.ApiClient;
+import com.example.balageru_user_app.OperationRetrofitApi.ApiInterface;
+import com.example.balageru_user_app.OperationRetrofitApi.Users;
 import com.example.balageru_user_app.PhoneLoginRegister.PhoneLoginActivity;
 import com.example.balageru_user_app.Sessions.SessionManager;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class MainActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
-    private List<PlateModel> plateModelList;
+    private List<CategoryModel> plateModelList;
     private PlateAdapter plateAdapter;
     private LinearLayout emailContinue, phoneContinue;
     SessionManager sessionManager;
+
+    ///////////////api's calling////////////////
+    public static ApiInterface apiInterface;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        /////////////////////////////////////////////////////////////////////
+        apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
 
         sessionManager = new SessionManager(this);
         //////////////////hide status bar hide /////////////////
@@ -53,22 +62,30 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setHasFixedSize(true);
 
         plateModelList = new ArrayList<>();
-        plateModelList.add(new PlateModel(R.drawable.balageru1));
-        plateModelList.add(new PlateModel(R.drawable.balageru1));
-        plateModelList.add(new PlateModel(R.drawable.balageru1));
-        plateModelList.add(new PlateModel(R.drawable.balageru1));
-        plateModelList.add(new PlateModel(R.drawable.balageru1));
-        plateModelList.add(new PlateModel(R.drawable.balageru1));
-        plateModelList.add(new PlateModel(R.drawable.balageru1));
-        plateModelList.add(new PlateModel(R.drawable.balageru1));
+        Call<Users> categoryCall = apiInterface.getCategories();
+        categoryCall.enqueue(new Callback<Users>() {
+            @Override
+            public void onResponse(Call<Users> call, Response<Users> response) {
 
-        plateAdapter = new PlateAdapter(plateModelList, this);
-        recyclerView.setAdapter(plateAdapter);
-        plateAdapter.notifyDataSetChanged();
+                plateModelList = response.body().getCategory();
 
-        ////////////call autoScroll start/////////////
-        autoScroll();
-        ////////////call autoScroll end/////////////
+                plateAdapter = new PlateAdapter(plateModelList, getApplicationContext());
+                recyclerView.setAdapter(plateAdapter);
+                plateAdapter.notifyDataSetChanged();
+
+
+//        //////////call autoScroll start/////////////
+            autoScroll();
+//        //////////call autoScroll end/////////////
+
+            }
+
+            @Override
+            public void onFailure(Call<Users> call, Throwable t) {
+
+            }
+        });
+
 
         ////////////continue with Email start/////////////
         emailContinue.setOnClickListener(new View.OnClickListener() {

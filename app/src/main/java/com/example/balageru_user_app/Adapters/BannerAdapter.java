@@ -11,18 +11,19 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.balageru_user_app.Models.BannerModel;
 import com.example.balageru_user_app.Models.CategoryModel;
 import com.example.balageru_user_app.R;
 
 import java.util.List;
 
-public class CatAdapter extends RecyclerView.Adapter<CatAdapter.PlateViewHolder> {
+public class BannerAdapter extends RecyclerView.Adapter<BannerAdapter.PlateViewHolder> {
 
-    private List<CategoryModel> categoryModelList;
+    private List<BannerModel> bannerModelList;
     private Context context;
 
-    public CatAdapter(List<CategoryModel> categoryModelList, Context context) {
-        this.categoryModelList = categoryModelList;
+    public BannerAdapter(List<BannerModel> bannerModelList, Context context) {
+        this.bannerModelList = bannerModelList;
         this.context = context;
     }
 
@@ -30,33 +31,31 @@ public class CatAdapter extends RecyclerView.Adapter<CatAdapter.PlateViewHolder>
     @Override
     public PlateViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType) {
 
-        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.layout_category,viewGroup,false);
+        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.layout_banner,viewGroup,false);
         return new PlateViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull PlateViewHolder holder, int position) {
-        CategoryModel categoryModel = categoryModelList.get(position);
 
-        holder.cat_title.setText(categoryModel.getCat_title());
-        Glide.with(context).load(categoryModel.getCat_image()).placeholder(R.drawable.small_placeholder).into(holder.cat_image);
+        BannerModel bannerModel = bannerModelList.get(position);
+
+        Glide.with(context).load(bannerModel.getBanner_image()).placeholder(R.drawable.small_placeholder).into(holder.banner_img);
     }
 
     @Override
     public int getItemCount() {
-        return categoryModelList.size();
+        return 8;
     }
 
     public class PlateViewHolder extends RecyclerView.ViewHolder {
 
-        private ImageView cat_image;
-        private TextView cat_title;
+        private ImageView banner_img;
 
         public PlateViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            cat_image = (ImageView) itemView.findViewById(R.id.imageView3);
-            cat_title = (TextView) itemView.findViewById(R.id.textView2);
+            banner_img = (ImageView) itemView.findViewById(R.id.banner_img);
         }
     }
 }

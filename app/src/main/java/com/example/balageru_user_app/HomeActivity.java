@@ -3,6 +3,7 @@ package com.example.balageru_user_app;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -10,16 +11,22 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
+import com.example.balageru_user_app.Adapters.CatAdapter;
 import com.example.balageru_user_app.Fragments.GoOutFragment;
 import com.example.balageru_user_app.Fragments.GoldFragment;
 import com.example.balageru_user_app.Fragments.OrdersFragment;
 import com.example.balageru_user_app.Fragments.VideosFragment;
+import com.example.balageru_user_app.Models.CategoryModel;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+
+import java.util.List;
 
 public class HomeActivity extends AppCompatActivity {
 
     BottomNavigationView bottomNavigation;
     FrameLayout frameLayout;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +50,7 @@ public class HomeActivity extends AppCompatActivity {
                 public boolean onNavigationItemSelected(@NonNull MenuItem item){
 
             Fragment selectedFragment = null;
+
 
             switch (item.getItemId())
             {

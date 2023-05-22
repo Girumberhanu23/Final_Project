@@ -5,6 +5,8 @@ import android.os.Bundle;
 
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,12 +17,31 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.example.balageru_user_app.Adapters.BannerAdapter;
+import com.example.balageru_user_app.Adapters.CatAdapter;
+import com.example.balageru_user_app.Adapters.GreatOffersAdapter;
+import com.example.balageru_user_app.Adapters.SimpleVerticalAdapter;
 import com.example.balageru_user_app.MainActivity;
+import com.example.balageru_user_app.Models.BannerModel;
+import com.example.balageru_user_app.Models.CategoryModel;
+import com.example.balageru_user_app.Models.GreatOffersModel;
+import com.example.balageru_user_app.Models.SimpleVerticalModel;
+import com.example.balageru_user_app.OperationRetrofitApi.ApiClient;
+import com.example.balageru_user_app.OperationRetrofitApi.ApiInterface;
+import com.example.balageru_user_app.OperationRetrofitApi.Users;
 import com.example.balageru_user_app.R;
 import com.example.balageru_user_app.Sessions.SessionManager;
 import com.google.android.material.navigation.NavigationView;
 
 import org.w3c.dom.Text;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -34,13 +55,63 @@ public class OrdersFragment extends Fragment implements  View.OnClickListener{
     }
 
     DrawerLayout drawerLayout;
-    ImageView navigationBar;
+    ImageView navigationBar, strip_banner_image;
     NavigationView navigationView;
     private View view;
     private RelativeLayout bookmarks, eightMMGold;
     private TextView your_orders, favourite_orders, address_book, online_ordering_help, send_feedback, report_safety_emergency, rate_playstore;
     SessionManager sessionManager;
     private TextView login, logout;
+
+
+
+    ///////////////category slider start/////////////////////
+    RecyclerView recyclerViewCategory;
+    private CatAdapter catAdapter;
+    private List<CategoryModel> categoryModelList;
+    ///////////////category slider end/////////////////////
+
+    ///////////////Banner slider start/////////////////////
+    private RecyclerView recyclerViewBanner;
+    private BannerAdapter bannerAdapter;
+    private List<BannerModel> bannerModelList;
+    ///////////////Banner slider end/////////////////////
+
+    ///////////////Simple Vertical slider start/////////////////////
+    private RecyclerView recyclerViewSimple;
+    private SimpleVerticalAdapter simpleVerticalAdapter;
+    private List<SimpleVerticalModel> simpleVerticalModelList;
+    ///////////////Simple Vertical  slider end/////////////////////
+
+    ////////////////////////////////Great offer horizontal start//////////////////////////////
+    private RecyclerView greatGreatOffersHorizontal;
+    private List<GreatOffersModel> greatOffersModel;
+    private GreatOffersAdapter greatOffersAdapter;
+    ////////////////////////////////Great offer horizontal end//////////////////////////////
+
+    ////////////////////////////////Great Offers vertical slider start//////////////////////////////
+    private RecyclerView greatOffersRecyclerViewVertical;
+    ////////////////////////////////Great Offers vertical slider end//////////////////////////////
+
+    ////////////////////////////////New Arrival Horizontal slider start//////////////////////////////
+    private RecyclerView newArrivalHorizontalRecyclerview;
+    ////////////////////////////////New Arrival Horizontal slider end//////////////////////////////
+
+    ////////////////////////////////New Arrival vertical slider start//////////////////////////////
+    private RecyclerView newArrivalVerticalRecyclerview;
+    ////////////////////////////////New Arrival Vertical slider end//////////////////////////////
+
+    ////////////////////////////////balageru exclusive vertical slider start//////////////////////////////
+    private RecyclerView exclusiveVerticalRecyclerview;
+    ////////////////////////////////balageru exclusive Vertical slider end//////////////////////////////
+
+    ////////////////////////////////balageru exclusive horizontal slider start//////////////////////////////
+    private RecyclerView exclusiveHorizontalRecyclerview;
+    ////////////////////////////////balageru exclusive horizontal slider end//////////////////////////////
+
+    ///////////////api's calling////////////////
+    public static ApiInterface apiInterface;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -51,8 +122,248 @@ public class OrdersFragment extends Fragment implements  View.OnClickListener{
 
 
         onSetNavigationDrawerEvents();
+        apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+
+        init();
         return view;
     }
+
+    private void init() {
+
+        //////////////////strip banner image start///////////////////////
+        strip_banner_image= (ImageView) view.findViewById(R.id.strip_banner_image);
+        Call<Users> stripBannerCall = apiInterface.getStripBanners();
+        stripBannerCall.enqueue(new Callback<Users>() {
+            @Override
+            public void onResponse(Call<Users> stripBannerCall, Response<Users> response) {
+
+                Glide.with(getContext()).load(response.body().getStrip_banner_image()).placeholder(R.drawable.small_placeholder).into(strip_banner_image);
+            }
+
+            @Override
+            public void onFailure(Call<Users> stripBannerCall, Throwable t) {
+
+            }
+        });
+
+        //////////////////strip banner image end///////////////////////
+
+
+        ////////////////////////////Category model start///////////////////////
+        recyclerViewCategory = (RecyclerView) view.findViewById(R.id.recyclerViewCategory);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        layoutManager.setOrientation(RecyclerView.HORIZONTAL);
+        recyclerViewCategory.setLayoutManager(layoutManager);
+
+        categoryModelList = new ArrayList<>();
+        Call<Users> categoryCall = apiInterface.getCategories();
+        categoryCall.enqueue(new Callback<Users>() {
+            @Override
+            public void onResponse(Call<Users> categoryCall, Response<Users> response) {
+
+                categoryModelList = response.body().getCategory();
+
+                catAdapter = new CatAdapter(categoryModelList,getContext());
+                recyclerViewCategory.setAdapter(catAdapter);
+                catAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onFailure(Call<Users> categoryCall, Throwable t) {
+
+            }
+        });
+
+        ////////////////////////////Category model end///////////////////////
+
+        ////////////////////////////////////Banner model list start////////////////////////////
+        recyclerViewBanner = (RecyclerView) view.findViewById(R.id.recyclerViewBanner);
+        LinearLayoutManager layoutManagerBanner = new LinearLayoutManager(getContext());
+        layoutManagerBanner.setOrientation(RecyclerView.HORIZONTAL);
+        recyclerViewBanner.setLayoutManager(layoutManagerBanner);
+
+        bannerModelList = new ArrayList<>();
+        Call<Users> bannerCall = apiInterface.getBanners();
+        bannerCall.enqueue(new Callback<Users>() {
+            @Override
+            public void onResponse(Call<Users> bannerCall, Response<Users> response) {
+                bannerModelList = response.body().getBanners();
+
+                bannerAdapter = new BannerAdapter(bannerModelList,getContext());
+                recyclerViewBanner.setAdapter(bannerAdapter);
+                bannerAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onFailure(Call<Users> bannerCall, Throwable t) {
+
+            }
+        });
+
+
+        ////////////////////////////////Banner model list end//////////////////////////////
+
+        ////////////////////////////////////Simple Vertical list start////////////////////////////
+        recyclerViewSimple = (RecyclerView) view.findViewById(R.id.recyclerViewSimple);
+        LinearLayoutManager layoutManagerSimpleVerticalSlider = new LinearLayoutManager(getContext());
+        layoutManagerSimpleVerticalSlider.setOrientation(RecyclerView.VERTICAL);
+        recyclerViewSimple.setLayoutManager(layoutManagerSimpleVerticalSlider);
+
+        simpleVerticalModelList = new ArrayList<>();
+        simpleVerticalModelList.add(new SimpleVerticalModel(R.drawable.small_placeholder, "Arhar Dal", "Yellow Arhar Dal in Noida", "20% OFF - use code BALAGERU", "Birr 250 per person | 2 hours", "Well Sanitized Kitchen", "3.5"));
+        simpleVerticalModelList.add(new SimpleVerticalModel(R.drawable.small_placeholder, "Arhar Dal", "Yellow Arhar Dal in Noida", "20% OFF - use code BALAGERU", "Birr 250 per person | 2 hours", "Well Sanitized Kitchen", "3.5"));
+        simpleVerticalModelList.add(new SimpleVerticalModel(R.drawable.small_placeholder, "Arhar Dal", "Yellow Arhar Dal in Noida", "20% OFF - use code BALAGERU", "Birr 250 per person | 2 hours", "Well Sanitized Kitchen", "3.5"));
+        simpleVerticalModelList.add(new SimpleVerticalModel(R.drawable.small_placeholder, "Arhar Dal", "Yellow Arhar Dal in Noida", "20% OFF - use code BALAGERU", "Birr 250 per person | 2 hours", "Well Sanitized Kitchen", "3.5"));
+        simpleVerticalModelList.add(new SimpleVerticalModel(R.drawable.small_placeholder, "Arhar Dal", "Yellow Arhar Dal in Noida", "20% OFF - use code BALAGERU", "Birr 250 per person | 2 hours", "Well Sanitized Kitchen", "3.5"));
+        simpleVerticalModelList.add(new SimpleVerticalModel(R.drawable.small_placeholder, "Arhar Dal", "Yellow Arhar Dal in Noida", "20% OFF - use code BALAGERU", "Birr 250 per person | 2 hours", "Well Sanitized Kitchen", "3.5"));
+        simpleVerticalModelList.add(new SimpleVerticalModel(R.drawable.small_placeholder, "Arhar Dal", "Yellow Arhar Dal in Noida", "20% OFF - use code BALAGERU", "Birr 250 per person | 2 hours", "Well Sanitized Kitchen", "3.5"));
+        simpleVerticalModelList.add(new SimpleVerticalModel(R.drawable.small_placeholder, "Arhar Dal", "Yellow Arhar Dal in Noida", "20% OFF - use code BALAGERU", "Birr 250 per person | 2 hours", "Well Sanitized Kitchen", "3.5"));
+        simpleVerticalModelList.add(new SimpleVerticalModel(R.drawable.small_placeholder, "Arhar Dal", "Yellow Arhar Dal in Noida", "20% OFF - use code BALAGERU", "Birr 250 per person | 2 hours", "Well Sanitized Kitchen", "3.5"));
+        simpleVerticalModelList.add(new SimpleVerticalModel(R.drawable.small_placeholder, "Arhar Dal", "Yellow Arhar Dal in Noida", "20% OFF - use code BALAGERU", "Birr 250 per person | 2 hours", "Well Sanitized Kitchen", "3.5"));
+        simpleVerticalModelList.add(new SimpleVerticalModel(R.drawable.small_placeholder, "Arhar Dal", "Yellow Arhar Dal in Noida", "20% OFF - use code BALAGERU", "Birr 250 per person | 2 hours", "Well Sanitized Kitchen", "3.5"));
+
+
+
+        simpleVerticalAdapter = new SimpleVerticalAdapter(simpleVerticalModelList,getContext());
+        recyclerViewSimple.setAdapter(simpleVerticalAdapter);
+        simpleVerticalAdapter.notifyDataSetChanged();
+        ////////////////////////////////Simple Vertical list end//////////////////////////////
+
+        ////////////////////////////////////Great offers model list start////////////////////////////
+        greatGreatOffersHorizontal = (RecyclerView) view.findViewById(R.id.recyclerViewgreatOffersHorizontal);
+        LinearLayoutManager layoutManagerGreatOffers = new LinearLayoutManager(getContext());
+        layoutManagerGreatOffers.setOrientation(RecyclerView.HORIZONTAL);
+        greatGreatOffersHorizontal.setLayoutManager(layoutManagerGreatOffers);
+
+        greatOffersModel = new ArrayList<>();
+        greatOffersModel.add(new GreatOffersModel(R.drawable.small_placeholder, "Vegetable Junction", "39 min", "30% 0FF", "3.9"));
+        greatOffersModel.add(new GreatOffersModel(R.drawable.small_placeholder, "Vegetable Junction", "39 min", "30% 0FF", "3.9"));
+        greatOffersModel.add(new GreatOffersModel(R.drawable.small_placeholder, "Vegetable Junction", "39 min", "30% 0FF", "3.9"));
+        greatOffersModel.add(new GreatOffersModel(R.drawable.small_placeholder, "Vegetable Junction", "39 min", "30% 0FF", "3.9"));
+        greatOffersModel.add(new GreatOffersModel(R.drawable.small_placeholder, "Vegetable Junction", "39 min", "30% 0FF", "3.9"));
+        greatOffersModel.add(new GreatOffersModel(R.drawable.small_placeholder, "Vegetable Junction", "39 min", "30% 0FF", "3.9"));
+        greatOffersModel.add(new GreatOffersModel(R.drawable.small_placeholder, "Vegetable Junction", "39 min", "30% 0FF", "3.9"));
+        greatOffersModel.add(new GreatOffersModel(R.drawable.small_placeholder, "Vegetable Junction", "39 min", "30% 0FF", "3.9"));
+
+
+
+        greatOffersAdapter = new GreatOffersAdapter(greatOffersModel,getContext());
+        greatGreatOffersHorizontal.setAdapter(greatOffersAdapter);
+        greatOffersAdapter.notifyDataSetChanged();
+        ////////////////////////////////Great offers model list end//////////////////////////////
+
+
+        ////////////////////////////////////New Great Offers vertical slider start////////////////////////////
+        greatOffersRecyclerViewVertical = (RecyclerView) view.findViewById(R.id.greatOffersRecyclerViewVertical);
+        LinearLayoutManager layoutManagerVerticalGreatOffers = new LinearLayoutManager(getContext());
+        layoutManagerVerticalGreatOffers.setOrientation(RecyclerView.VERTICAL);
+        greatOffersRecyclerViewVertical.setLayoutManager(layoutManagerVerticalGreatOffers);
+
+        simpleVerticalModelList = new ArrayList<>();
+        simpleVerticalModelList.add(new SimpleVerticalModel(R.drawable.small_placeholder, "Arhar Dal", "Yellow Arhar Dal in Noida", "20% OFF - use code BALAGERU", "Birr 250 per person | 2 hours", "Well Sanitized Kitchen", "3.5"));
+        simpleVerticalModelList.add(new SimpleVerticalModel(R.drawable.small_placeholder, "Arhar Dal", "Yellow Arhar Dal in Noida", "20% OFF - use code BALAGERU", "Birr 250 per person | 2 hours", "Well Sanitized Kitchen", "3.5"));
+        simpleVerticalModelList.add(new SimpleVerticalModel(R.drawable.small_placeholder, "Arhar Dal", "Yellow Arhar Dal in Noida", "20% OFF - use code BALAGERU", "Birr 250 per person | 2 hours", "Well Sanitized Kitchen", "3.5"));
+        simpleVerticalModelList.add(new SimpleVerticalModel(R.drawable.small_placeholder, "Arhar Dal", "Yellow Arhar Dal in Noida", "20% OFF - use code BALAGERU", "Birr 250 per person | 2 hours", "Well Sanitized Kitchen", "3.5"));
+        simpleVerticalModelList.add(new SimpleVerticalModel(R.drawable.small_placeholder, "Arhar Dal", "Yellow Arhar Dal in Noida", "20% OFF - use code BALAGERU", "Birr 250 per person | 2 hours", "Well Sanitized Kitchen", "3.5"));
+        simpleVerticalModelList.add(new SimpleVerticalModel(R.drawable.small_placeholder, "Arhar Dal", "Yellow Arhar Dal in Noida", "20% OFF - use code BALAGERU", "Birr 250 per person | 2 hours", "Well Sanitized Kitchen", "3.5"));
+        simpleVerticalModelList.add(new SimpleVerticalModel(R.drawable.small_placeholder, "Arhar Dal", "Yellow Arhar Dal in Noida", "20% OFF - use code BALAGERU", "Birr 250 per person | 2 hours", "Well Sanitized Kitchen", "3.5"));
+
+        simpleVerticalAdapter = new SimpleVerticalAdapter(simpleVerticalModelList,getContext());
+        greatOffersRecyclerViewVertical.setAdapter(simpleVerticalAdapter);
+        simpleVerticalAdapter.notifyDataSetChanged();
+        ////////////////////////////////New Great Offers vertical slider end//////////////////////////////
+
+
+        ////////////////////////////////////New arrival horizontal model list start////////////////////////////
+        newArrivalHorizontalRecyclerview = (RecyclerView) view.findViewById(R.id.newArrivalHorizontalRecyclerview);
+        LinearLayoutManager layoutManagerHorizontalNewArrival = new LinearLayoutManager(getContext());
+        layoutManagerHorizontalNewArrival.setOrientation(RecyclerView.HORIZONTAL);
+        newArrivalHorizontalRecyclerview.setLayoutManager(layoutManagerHorizontalNewArrival);
+
+        greatOffersModel = new ArrayList<>();
+        greatOffersModel.add(new GreatOffersModel(R.drawable.small_placeholder, "Vegetable Junction", "39 min", "30% 0FF", "3.9"));
+        greatOffersModel.add(new GreatOffersModel(R.drawable.small_placeholder, "Vegetable Junction", "39 min", "30% 0FF", "3.9"));
+        greatOffersModel.add(new GreatOffersModel(R.drawable.small_placeholder, "Vegetable Junction", "39 min", "30% 0FF", "3.9"));
+        greatOffersModel.add(new GreatOffersModel(R.drawable.small_placeholder, "Vegetable Junction", "39 min", "30% 0FF", "3.9"));
+        greatOffersModel.add(new GreatOffersModel(R.drawable.small_placeholder, "Vegetable Junction", "39 min", "30% 0FF", "3.9"));
+        greatOffersModel.add(new GreatOffersModel(R.drawable.small_placeholder, "Vegetable Junction", "39 min", "30% 0FF", "3.9"));
+        greatOffersModel.add(new GreatOffersModel(R.drawable.small_placeholder, "Vegetable Junction", "39 min", "30% 0FF", "3.9"));
+        greatOffersModel.add(new GreatOffersModel(R.drawable.small_placeholder, "Vegetable Junction", "39 min", "30% 0FF", "3.9"));
+
+
+
+        greatOffersAdapter = new GreatOffersAdapter(greatOffersModel,getContext());
+        newArrivalHorizontalRecyclerview.setAdapter(greatOffersAdapter);
+        greatOffersAdapter.notifyDataSetChanged();
+        ////////////////////////////////New arrival horizontal model list end//////////////////////////////
+
+        ////////////////////////////////////New arrival vertical slider start////////////////////////////
+        newArrivalVerticalRecyclerview = (RecyclerView) view.findViewById(R.id.newArrivalVerticalRecyclerview);
+        LinearLayoutManager layoutManagerVerticalNewArrival = new LinearLayoutManager(getContext());
+        layoutManagerVerticalNewArrival.setOrientation(RecyclerView.VERTICAL);
+        newArrivalVerticalRecyclerview.setLayoutManager(layoutManagerVerticalNewArrival);
+
+        simpleVerticalModelList = new ArrayList<>();
+        simpleVerticalModelList.add(new SimpleVerticalModel(R.drawable.small_placeholder, "Arhar Dal", "Yellow Arhar Dal in Noida", "20% OFF - use code BALAGERU", "Birr 250 per person | 2 hours", "Well Sanitized Kitchen", "3.5"));
+        simpleVerticalModelList.add(new SimpleVerticalModel(R.drawable.small_placeholder, "Arhar Dal", "Yellow Arhar Dal in Noida", "20% OFF - use code BALAGERU", "Birr 250 per person | 2 hours", "Well Sanitized Kitchen", "3.5"));
+        simpleVerticalModelList.add(new SimpleVerticalModel(R.drawable.small_placeholder, "Arhar Dal", "Yellow Arhar Dal in Noida", "20% OFF - use code BALAGERU", "Birr 250 per person | 2 hours", "Well Sanitized Kitchen", "3.5"));
+        simpleVerticalModelList.add(new SimpleVerticalModel(R.drawable.small_placeholder, "Arhar Dal", "Yellow Arhar Dal in Noida", "20% OFF - use code BALAGERU", "Birr 250 per person | 2 hours", "Well Sanitized Kitchen", "3.5"));
+        simpleVerticalModelList.add(new SimpleVerticalModel(R.drawable.small_placeholder, "Arhar Dal", "Yellow Arhar Dal in Noida", "20% OFF - use code BALAGERU", "Birr 250 per person | 2 hours", "Well Sanitized Kitchen", "3.5"));
+        simpleVerticalModelList.add(new SimpleVerticalModel(R.drawable.small_placeholder, "Arhar Dal", "Yellow Arhar Dal in Noida", "20% OFF - use code BALAGERU", "Birr 250 per person | 2 hours", "Well Sanitized Kitchen", "3.5"));
+        simpleVerticalModelList.add(new SimpleVerticalModel(R.drawable.small_placeholder, "Arhar Dal", "Yellow Arhar Dal in Noida", "20% OFF - use code BALAGERU", "Birr 250 per person | 2 hours", "Well Sanitized Kitchen", "3.5"));
+
+        simpleVerticalAdapter = new SimpleVerticalAdapter(simpleVerticalModelList,getContext());
+        newArrivalVerticalRecyclerview.setAdapter(simpleVerticalAdapter);
+        simpleVerticalAdapter.notifyDataSetChanged();
+        ////////////////////////////////New arrival vertical slider end//////////////////////////////
+
+
+        ////////////////////////////////////New arrival horizontal model list start////////////////////////////
+        exclusiveHorizontalRecyclerview = (RecyclerView) view.findViewById(R.id.exclusiveHorizontalRecyclerview);
+        LinearLayoutManager layoutManagerExclusiveHorizontal = new LinearLayoutManager(getContext());
+        layoutManagerExclusiveHorizontal.setOrientation(RecyclerView.HORIZONTAL);
+        exclusiveHorizontalRecyclerview.setLayoutManager(layoutManagerExclusiveHorizontal);
+
+        greatOffersModel = new ArrayList<>();
+        greatOffersModel.add(new GreatOffersModel(R.drawable.small_placeholder, "Vegetable Junction", "39 min", "30% 0FF", "3.9"));
+        greatOffersModel.add(new GreatOffersModel(R.drawable.small_placeholder, "Vegetable Junction", "39 min", "30% 0FF", "3.9"));
+        greatOffersModel.add(new GreatOffersModel(R.drawable.small_placeholder, "Vegetable Junction", "39 min", "30% 0FF", "3.9"));
+        greatOffersModel.add(new GreatOffersModel(R.drawable.small_placeholder, "Vegetable Junction", "39 min", "30% 0FF", "3.9"));
+        greatOffersModel.add(new GreatOffersModel(R.drawable.small_placeholder, "Vegetable Junction", "39 min", "30% 0FF", "3.9"));
+        greatOffersModel.add(new GreatOffersModel(R.drawable.small_placeholder, "Vegetable Junction", "39 min", "30% 0FF", "3.9"));
+        greatOffersModel.add(new GreatOffersModel(R.drawable.small_placeholder, "Vegetable Junction", "39 min", "30% 0FF", "3.9"));
+        greatOffersModel.add(new GreatOffersModel(R.drawable.small_placeholder, "Vegetable Junction", "39 min", "30% 0FF", "3.9"));
+
+
+
+        greatOffersAdapter = new GreatOffersAdapter(greatOffersModel,getContext());
+        exclusiveHorizontalRecyclerview.setAdapter(greatOffersAdapter);
+        greatOffersAdapter.notifyDataSetChanged();
+        ////////////////////////////////New arrival horizontal model list end//////////////////////////////
+
+        ////////////////////////////////////New arrival vertical slider start////////////////////////////
+        exclusiveVerticalRecyclerview = (RecyclerView) view.findViewById(R.id.exclusiveVerticalRecyclerview);
+        LinearLayoutManager layoutManagerExclusiveVertical = new LinearLayoutManager(getContext());
+        layoutManagerExclusiveVertical.setOrientation(RecyclerView.VERTICAL);
+        exclusiveVerticalRecyclerview.setLayoutManager(layoutManagerExclusiveVertical);
+
+        simpleVerticalModelList = new ArrayList<>();
+        simpleVerticalModelList.add(new SimpleVerticalModel(R.drawable.small_placeholder, "Arhar Dal", "Yellow Arhar Dal in Noida", "20% OFF - use code BALAGERU", "Birr 250 per person | 2 hours", "Well Sanitized Kitchen", "3.5"));
+        simpleVerticalModelList.add(new SimpleVerticalModel(R.drawable.small_placeholder, "Arhar Dal", "Yellow Arhar Dal in Noida", "20% OFF - use code BALAGERU", "Birr 250 per person | 2 hours", "Well Sanitized Kitchen", "3.5"));
+        simpleVerticalModelList.add(new SimpleVerticalModel(R.drawable.small_placeholder, "Arhar Dal", "Yellow Arhar Dal in Noida", "20% OFF - use code BALAGERU", "Birr 250 per person | 2 hours", "Well Sanitized Kitchen", "3.5"));
+        simpleVerticalModelList.add(new SimpleVerticalModel(R.drawable.small_placeholder, "Arhar Dal", "Yellow Arhar Dal in Noida", "20% OFF - use code BALAGERU", "Birr 250 per person | 2 hours", "Well Sanitized Kitchen", "3.5"));
+        simpleVerticalModelList.add(new SimpleVerticalModel(R.drawable.small_placeholder, "Arhar Dal", "Yellow Arhar Dal in Noida", "20% OFF - use code BALAGERU", "Birr 250 per person | 2 hours", "Well Sanitized Kitchen", "3.5"));
+        simpleVerticalModelList.add(new SimpleVerticalModel(R.drawable.small_placeholder, "Arhar Dal", "Yellow Arhar Dal in Noida", "20% OFF - use code BALAGERU", "Birr 250 per person | 2 hours", "Well Sanitized Kitchen", "3.5"));
+        simpleVerticalModelList.add(new SimpleVerticalModel(R.drawable.small_placeholder, "Arhar Dal", "Yellow Arhar Dal in Noida", "20% OFF - use code BALAGERU", "Birr 250 per person | 2 hours", "Well Sanitized Kitchen", "3.5"));
+
+        simpleVerticalAdapter = new SimpleVerticalAdapter(simpleVerticalModelList,getContext());
+        exclusiveVerticalRecyclerview.setAdapter(simpleVerticalAdapter);
+        simpleVerticalAdapter.notifyDataSetChanged();
+        ////////////////////////////////New arrival vertical slider end//////////////////////////////
+
+
+    }
+
     private void onSetNavigationDrawerEvents() {
 
         drawerLayout = (DrawerLayout) view.findViewById(R.id.drawerLayout);

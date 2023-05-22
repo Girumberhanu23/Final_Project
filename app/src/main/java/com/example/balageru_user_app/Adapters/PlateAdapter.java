@@ -10,18 +10,18 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.example.balageru_user_app.Models.PlateModel;
+import com.example.balageru_user_app.Models.CategoryModel;
 import com.example.balageru_user_app.R;
 
 import java.util.List;
 
 public class PlateAdapter extends RecyclerView.Adapter<PlateAdapter.PlateViewHolder> {
 
-    private List<PlateModel> plateModelList;
+    private List<CategoryModel> categoryModelList;
     private Context context;
 
-    public PlateAdapter(List<PlateModel> plateModelList, Context context) {
-        this.plateModelList = plateModelList;
+    public PlateAdapter(List<CategoryModel> categoryModelList, Context context) {
+        this.categoryModelList = categoryModelList;
         this.context = context;
     }
 
@@ -35,13 +35,15 @@ public class PlateAdapter extends RecyclerView.Adapter<PlateAdapter.PlateViewHol
 
     @Override
     public void onBindViewHolder(@NonNull PlateViewHolder holder, int position) {
-        PlateModel plateModel = plateModelList.get(position);
-        Glide.with(context).load(plateModel.getPlate_img()).into(holder.plateImg);
+
+        CategoryModel categoryModel = categoryModelList.get(position);
+
+        Glide.with(context).load(categoryModel.getCat_image()).placeholder(R.drawable.small_placeholder).into(holder.plateImg);
     }
 
     @Override
     public int getItemCount() {
-        return plateModelList.size();
+        return categoryModelList.size();
     }
 
     public class PlateViewHolder extends RecyclerView.ViewHolder {

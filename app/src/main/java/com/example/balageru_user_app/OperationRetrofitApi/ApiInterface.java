@@ -7,7 +7,7 @@ import retrofit2.http.Query;
 public interface ApiInterface {
 
     //////////////email registration/////////////////
-    @GET("email_registration.php")
+    @GET("users/email_registration.php")
     Call<Users> performEmailRegistration(
         @Query("user_name") String user_name,
         @Query("user_email") String user_email,
@@ -15,21 +15,36 @@ public interface ApiInterface {
     );
 
     //////////////email login/////////////////
-    @GET("email_login.php")
+    @GET("users/email_login.php")
     Call<Users> performEmailLogin(
             @Query("user_email") String user_email,
             @Query("user_password") String user_password
     );
 
     //////////////email registration/////////////////
-    @GET("phone_registration.php")
+    @GET("users/phone_registration.php")
     Call<Users> performPhoneRegistration(
             @Query("user_phone") String user_phone
     );
 
     //////////////email registration/////////////////
-    @GET("phone_login.php")
+    @GET("users/phone_login.php")
     Call<Users> performPhoneLogin(
             @Query("user_phone") String user_phone
     );
+
+    /////////////getting all categories/////////////
+    @GET("api/categories.php")
+    Call<Users> getCategories();
+
+    /////////////getting all banners/////////////
+    @GET("api/banners.php")
+    Call<Users> getBanners();
+
+    /////////////getting strip banners/////////////
+    @GET("api/strip_banners.php")
+    Call<Users> getStripBanners();
+
+
+
 }
