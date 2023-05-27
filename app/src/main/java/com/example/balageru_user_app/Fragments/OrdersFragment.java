@@ -210,23 +210,26 @@ public class OrdersFragment extends Fragment implements  View.OnClickListener{
         recyclerViewSimple.setLayoutManager(layoutManagerSimpleVerticalSlider);
 
         simpleVerticalModelList = new ArrayList<>();
-        simpleVerticalModelList.add(new SimpleVerticalModel(R.drawable.small_placeholder, "Arhar Dal", "Yellow Arhar Dal in Noida", "20% OFF - use code BALAGERU", "Birr 250 per person | 2 hours", "Well Sanitized Kitchen", "3.5"));
-        simpleVerticalModelList.add(new SimpleVerticalModel(R.drawable.small_placeholder, "Arhar Dal", "Yellow Arhar Dal in Noida", "20% OFF - use code BALAGERU", "Birr 250 per person | 2 hours", "Well Sanitized Kitchen", "3.5"));
-        simpleVerticalModelList.add(new SimpleVerticalModel(R.drawable.small_placeholder, "Arhar Dal", "Yellow Arhar Dal in Noida", "20% OFF - use code BALAGERU", "Birr 250 per person | 2 hours", "Well Sanitized Kitchen", "3.5"));
-        simpleVerticalModelList.add(new SimpleVerticalModel(R.drawable.small_placeholder, "Arhar Dal", "Yellow Arhar Dal in Noida", "20% OFF - use code BALAGERU", "Birr 250 per person | 2 hours", "Well Sanitized Kitchen", "3.5"));
-        simpleVerticalModelList.add(new SimpleVerticalModel(R.drawable.small_placeholder, "Arhar Dal", "Yellow Arhar Dal in Noida", "20% OFF - use code BALAGERU", "Birr 250 per person | 2 hours", "Well Sanitized Kitchen", "3.5"));
-        simpleVerticalModelList.add(new SimpleVerticalModel(R.drawable.small_placeholder, "Arhar Dal", "Yellow Arhar Dal in Noida", "20% OFF - use code BALAGERU", "Birr 250 per person | 2 hours", "Well Sanitized Kitchen", "3.5"));
-        simpleVerticalModelList.add(new SimpleVerticalModel(R.drawable.small_placeholder, "Arhar Dal", "Yellow Arhar Dal in Noida", "20% OFF - use code BALAGERU", "Birr 250 per person | 2 hours", "Well Sanitized Kitchen", "3.5"));
-        simpleVerticalModelList.add(new SimpleVerticalModel(R.drawable.small_placeholder, "Arhar Dal", "Yellow Arhar Dal in Noida", "20% OFF - use code BALAGERU", "Birr 250 per person | 2 hours", "Well Sanitized Kitchen", "3.5"));
-        simpleVerticalModelList.add(new SimpleVerticalModel(R.drawable.small_placeholder, "Arhar Dal", "Yellow Arhar Dal in Noida", "20% OFF - use code BALAGERU", "Birr 250 per person | 2 hours", "Well Sanitized Kitchen", "3.5"));
-        simpleVerticalModelList.add(new SimpleVerticalModel(R.drawable.small_placeholder, "Arhar Dal", "Yellow Arhar Dal in Noida", "20% OFF - use code BALAGERU", "Birr 250 per person | 2 hours", "Well Sanitized Kitchen", "3.5"));
-        simpleVerticalModelList.add(new SimpleVerticalModel(R.drawable.small_placeholder, "Arhar Dal", "Yellow Arhar Dal in Noida", "20% OFF - use code BALAGERU", "Birr 250 per person | 2 hours", "Well Sanitized Kitchen", "3.5"));
+        Call<Users> random_shops = apiInterface.getRandomShops();
+        random_shops.enqueue(new Callback<Users>() {
+            @Override
+            public void onResponse(Call<Users> call, Response<Users> response) {
+                simpleVerticalModelList = response.body().getRandom_shops();
+
+                simpleVerticalAdapter = new SimpleVerticalAdapter(simpleVerticalModelList,getContext());
+                recyclerViewSimple.setAdapter(simpleVerticalAdapter);
+                simpleVerticalAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onFailure(Call<Users> call, Throwable t) {
+
+            }
+        });
 
 
 
-        simpleVerticalAdapter = new SimpleVerticalAdapter(simpleVerticalModelList,getContext());
-        recyclerViewSimple.setAdapter(simpleVerticalAdapter);
-        simpleVerticalAdapter.notifyDataSetChanged();
+
         ////////////////////////////////Simple Vertical list end//////////////////////////////
 
         ////////////////////////////////////Great offers model list start////////////////////////////
@@ -236,20 +239,23 @@ public class OrdersFragment extends Fragment implements  View.OnClickListener{
         greatGreatOffersHorizontal.setLayoutManager(layoutManagerGreatOffers);
 
         greatOffersModel = new ArrayList<>();
-        greatOffersModel.add(new GreatOffersModel(R.drawable.small_placeholder, "Vegetable Junction", "39 min", "30% 0FF", "3.9"));
-        greatOffersModel.add(new GreatOffersModel(R.drawable.small_placeholder, "Vegetable Junction", "39 min", "30% 0FF", "3.9"));
-        greatOffersModel.add(new GreatOffersModel(R.drawable.small_placeholder, "Vegetable Junction", "39 min", "30% 0FF", "3.9"));
-        greatOffersModel.add(new GreatOffersModel(R.drawable.small_placeholder, "Vegetable Junction", "39 min", "30% 0FF", "3.9"));
-        greatOffersModel.add(new GreatOffersModel(R.drawable.small_placeholder, "Vegetable Junction", "39 min", "30% 0FF", "3.9"));
-        greatOffersModel.add(new GreatOffersModel(R.drawable.small_placeholder, "Vegetable Junction", "39 min", "30% 0FF", "3.9"));
-        greatOffersModel.add(new GreatOffersModel(R.drawable.small_placeholder, "Vegetable Junction", "39 min", "30% 0FF", "3.9"));
-        greatOffersModel.add(new GreatOffersModel(R.drawable.small_placeholder, "Vegetable Junction", "39 min", "30% 0FF", "3.9"));
+        Call<Users> greatOffersCall = apiInterface.greatOffersShop();
+        greatOffersCall.enqueue(new Callback<Users>() {
+            @Override
+            public void onResponse(Call<Users> call, Response<Users> response) {
+                greatOffersModel = response.body().getGreat_offers_shops();
 
+                greatOffersAdapter = new GreatOffersAdapter(greatOffersModel,getContext());
+                greatGreatOffersHorizontal.setAdapter(greatOffersAdapter);
+                greatOffersAdapter.notifyDataSetChanged();
+            }
 
+            @Override
+            public void onFailure(Call<Users> call, Throwable t) {
 
-        greatOffersAdapter = new GreatOffersAdapter(greatOffersModel,getContext());
-        greatGreatOffersHorizontal.setAdapter(greatOffersAdapter);
-        greatOffersAdapter.notifyDataSetChanged();
+            }
+        });
+
         ////////////////////////////////Great offers model list end//////////////////////////////
 
 
@@ -260,17 +266,22 @@ public class OrdersFragment extends Fragment implements  View.OnClickListener{
         greatOffersRecyclerViewVertical.setLayoutManager(layoutManagerVerticalGreatOffers);
 
         simpleVerticalModelList = new ArrayList<>();
-        simpleVerticalModelList.add(new SimpleVerticalModel(R.drawable.small_placeholder, "Arhar Dal", "Yellow Arhar Dal in Noida", "20% OFF - use code BALAGERU", "Birr 250 per person | 2 hours", "Well Sanitized Kitchen", "3.5"));
-        simpleVerticalModelList.add(new SimpleVerticalModel(R.drawable.small_placeholder, "Arhar Dal", "Yellow Arhar Dal in Noida", "20% OFF - use code BALAGERU", "Birr 250 per person | 2 hours", "Well Sanitized Kitchen", "3.5"));
-        simpleVerticalModelList.add(new SimpleVerticalModel(R.drawable.small_placeholder, "Arhar Dal", "Yellow Arhar Dal in Noida", "20% OFF - use code BALAGERU", "Birr 250 per person | 2 hours", "Well Sanitized Kitchen", "3.5"));
-        simpleVerticalModelList.add(new SimpleVerticalModel(R.drawable.small_placeholder, "Arhar Dal", "Yellow Arhar Dal in Noida", "20% OFF - use code BALAGERU", "Birr 250 per person | 2 hours", "Well Sanitized Kitchen", "3.5"));
-        simpleVerticalModelList.add(new SimpleVerticalModel(R.drawable.small_placeholder, "Arhar Dal", "Yellow Arhar Dal in Noida", "20% OFF - use code BALAGERU", "Birr 250 per person | 2 hours", "Well Sanitized Kitchen", "3.5"));
-        simpleVerticalModelList.add(new SimpleVerticalModel(R.drawable.small_placeholder, "Arhar Dal", "Yellow Arhar Dal in Noida", "20% OFF - use code BALAGERU", "Birr 250 per person | 2 hours", "Well Sanitized Kitchen", "3.5"));
-        simpleVerticalModelList.add(new SimpleVerticalModel(R.drawable.small_placeholder, "Arhar Dal", "Yellow Arhar Dal in Noida", "20% OFF - use code BALAGERU", "Birr 250 per person | 2 hours", "Well Sanitized Kitchen", "3.5"));
+        Call<Users> greatOffersVerticalCall = apiInterface.greatOffersVerticalShop();
+        greatOffersVerticalCall.enqueue(new Callback<Users>() {
+            @Override
+            public void onResponse(Call<Users> call, Response<Users> response) {
+                simpleVerticalModelList = response.body().getGreat_offers_shops_vertical();
 
-        simpleVerticalAdapter = new SimpleVerticalAdapter(simpleVerticalModelList,getContext());
-        greatOffersRecyclerViewVertical.setAdapter(simpleVerticalAdapter);
-        simpleVerticalAdapter.notifyDataSetChanged();
+                simpleVerticalAdapter = new SimpleVerticalAdapter(simpleVerticalModelList,getContext());
+                greatOffersRecyclerViewVertical.setAdapter(simpleVerticalAdapter);
+                simpleVerticalAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onFailure(Call<Users> call, Throwable t) {
+
+            }
+        });
         ////////////////////////////////New Great Offers vertical slider end//////////////////////////////
 
 
@@ -281,20 +292,24 @@ public class OrdersFragment extends Fragment implements  View.OnClickListener{
         newArrivalHorizontalRecyclerview.setLayoutManager(layoutManagerHorizontalNewArrival);
 
         greatOffersModel = new ArrayList<>();
-        greatOffersModel.add(new GreatOffersModel(R.drawable.small_placeholder, "Vegetable Junction", "39 min", "30% 0FF", "3.9"));
-        greatOffersModel.add(new GreatOffersModel(R.drawable.small_placeholder, "Vegetable Junction", "39 min", "30% 0FF", "3.9"));
-        greatOffersModel.add(new GreatOffersModel(R.drawable.small_placeholder, "Vegetable Junction", "39 min", "30% 0FF", "3.9"));
-        greatOffersModel.add(new GreatOffersModel(R.drawable.small_placeholder, "Vegetable Junction", "39 min", "30% 0FF", "3.9"));
-        greatOffersModel.add(new GreatOffersModel(R.drawable.small_placeholder, "Vegetable Junction", "39 min", "30% 0FF", "3.9"));
-        greatOffersModel.add(new GreatOffersModel(R.drawable.small_placeholder, "Vegetable Junction", "39 min", "30% 0FF", "3.9"));
-        greatOffersModel.add(new GreatOffersModel(R.drawable.small_placeholder, "Vegetable Junction", "39 min", "30% 0FF", "3.9"));
-        greatOffersModel.add(new GreatOffersModel(R.drawable.small_placeholder, "Vegetable Junction", "39 min", "30% 0FF", "3.9"));
+        Call<Users> arrivalCall = apiInterface.newArrivalsShops();
+        arrivalCall.enqueue(new Callback<Users>() {
+            @Override
+            public void onResponse(Call<Users> call, Response<Users> response) {
+                greatOffersModel = response.body().getNew_arrivals_shops();
 
+                greatOffersAdapter = new GreatOffersAdapter(greatOffersModel,getContext());
+                newArrivalHorizontalRecyclerview.setAdapter(greatOffersAdapter);
+                greatOffersAdapter.notifyDataSetChanged();
 
+            }
 
-        greatOffersAdapter = new GreatOffersAdapter(greatOffersModel,getContext());
-        newArrivalHorizontalRecyclerview.setAdapter(greatOffersAdapter);
-        greatOffersAdapter.notifyDataSetChanged();
+            @Override
+            public void onFailure(Call<Users> call, Throwable t) {
+
+            }
+        });
+
         ////////////////////////////////New arrival horizontal model list end//////////////////////////////
 
         ////////////////////////////////////New arrival vertical slider start////////////////////////////
@@ -304,17 +319,24 @@ public class OrdersFragment extends Fragment implements  View.OnClickListener{
         newArrivalVerticalRecyclerview.setLayoutManager(layoutManagerVerticalNewArrival);
 
         simpleVerticalModelList = new ArrayList<>();
-        simpleVerticalModelList.add(new SimpleVerticalModel(R.drawable.small_placeholder, "Arhar Dal", "Yellow Arhar Dal in Noida", "20% OFF - use code BALAGERU", "Birr 250 per person | 2 hours", "Well Sanitized Kitchen", "3.5"));
-        simpleVerticalModelList.add(new SimpleVerticalModel(R.drawable.small_placeholder, "Arhar Dal", "Yellow Arhar Dal in Noida", "20% OFF - use code BALAGERU", "Birr 250 per person | 2 hours", "Well Sanitized Kitchen", "3.5"));
-        simpleVerticalModelList.add(new SimpleVerticalModel(R.drawable.small_placeholder, "Arhar Dal", "Yellow Arhar Dal in Noida", "20% OFF - use code BALAGERU", "Birr 250 per person | 2 hours", "Well Sanitized Kitchen", "3.5"));
-        simpleVerticalModelList.add(new SimpleVerticalModel(R.drawable.small_placeholder, "Arhar Dal", "Yellow Arhar Dal in Noida", "20% OFF - use code BALAGERU", "Birr 250 per person | 2 hours", "Well Sanitized Kitchen", "3.5"));
-        simpleVerticalModelList.add(new SimpleVerticalModel(R.drawable.small_placeholder, "Arhar Dal", "Yellow Arhar Dal in Noida", "20% OFF - use code BALAGERU", "Birr 250 per person | 2 hours", "Well Sanitized Kitchen", "3.5"));
-        simpleVerticalModelList.add(new SimpleVerticalModel(R.drawable.small_placeholder, "Arhar Dal", "Yellow Arhar Dal in Noida", "20% OFF - use code BALAGERU", "Birr 250 per person | 2 hours", "Well Sanitized Kitchen", "3.5"));
-        simpleVerticalModelList.add(new SimpleVerticalModel(R.drawable.small_placeholder, "Arhar Dal", "Yellow Arhar Dal in Noida", "20% OFF - use code BALAGERU", "Birr 250 per person | 2 hours", "Well Sanitized Kitchen", "3.5"));
+        Call<Users> arrivalVerticalCall = apiInterface.newArrivalsVerticalShops();
+        arrivalVerticalCall.enqueue(new Callback<Users>() {
+            @Override
+            public void onResponse(Call<Users> call, Response<Users> response) {
+                simpleVerticalModelList = response.body().getNew_arrivals_shops_vertical();
 
-        simpleVerticalAdapter = new SimpleVerticalAdapter(simpleVerticalModelList,getContext());
-        newArrivalVerticalRecyclerview.setAdapter(simpleVerticalAdapter);
-        simpleVerticalAdapter.notifyDataSetChanged();
+                simpleVerticalAdapter = new SimpleVerticalAdapter(simpleVerticalModelList,getContext());
+                newArrivalVerticalRecyclerview.setAdapter(simpleVerticalAdapter);
+                simpleVerticalAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onFailure(Call<Users> call, Throwable t) {
+
+            }
+        });
+
+
         ////////////////////////////////New arrival vertical slider end//////////////////////////////
 
 
@@ -325,21 +347,24 @@ public class OrdersFragment extends Fragment implements  View.OnClickListener{
         exclusiveHorizontalRecyclerview.setLayoutManager(layoutManagerExclusiveHorizontal);
 
         greatOffersModel = new ArrayList<>();
-        greatOffersModel.add(new GreatOffersModel(R.drawable.small_placeholder, "Vegetable Junction", "39 min", "30% 0FF", "3.9"));
-        greatOffersModel.add(new GreatOffersModel(R.drawable.small_placeholder, "Vegetable Junction", "39 min", "30% 0FF", "3.9"));
-        greatOffersModel.add(new GreatOffersModel(R.drawable.small_placeholder, "Vegetable Junction", "39 min", "30% 0FF", "3.9"));
-        greatOffersModel.add(new GreatOffersModel(R.drawable.small_placeholder, "Vegetable Junction", "39 min", "30% 0FF", "3.9"));
-        greatOffersModel.add(new GreatOffersModel(R.drawable.small_placeholder, "Vegetable Junction", "39 min", "30% 0FF", "3.9"));
-        greatOffersModel.add(new GreatOffersModel(R.drawable.small_placeholder, "Vegetable Junction", "39 min", "30% 0FF", "3.9"));
-        greatOffersModel.add(new GreatOffersModel(R.drawable.small_placeholder, "Vegetable Junction", "39 min", "30% 0FF", "3.9"));
-        greatOffersModel.add(new GreatOffersModel(R.drawable.small_placeholder, "Vegetable Junction", "39 min", "30% 0FF", "3.9"));
+        Call<Users> exclusiveCall = apiInterface.balageruExclusive();
+        exclusiveCall.enqueue(new Callback<Users>() {
+            @Override
+            public void onResponse(Call<Users> call, Response<Users> response) {
+                greatOffersModel = response.body().getBalageru_exclusive();
 
+                greatOffersAdapter = new GreatOffersAdapter(greatOffersModel,getContext());
+                exclusiveHorizontalRecyclerview.setAdapter(greatOffersAdapter);
+                greatOffersAdapter.notifyDataSetChanged();
+            }
 
+            @Override
+            public void onFailure(Call<Users> call, Throwable t) {
 
-        greatOffersAdapter = new GreatOffersAdapter(greatOffersModel,getContext());
-        exclusiveHorizontalRecyclerview.setAdapter(greatOffersAdapter);
-        greatOffersAdapter.notifyDataSetChanged();
+            }
+        });
         ////////////////////////////////New arrival horizontal model list end//////////////////////////////
+
 
         ////////////////////////////////////New arrival vertical slider start////////////////////////////
         exclusiveVerticalRecyclerview = (RecyclerView) view.findViewById(R.id.exclusiveVerticalRecyclerview);
@@ -348,17 +373,22 @@ public class OrdersFragment extends Fragment implements  View.OnClickListener{
         exclusiveVerticalRecyclerview.setLayoutManager(layoutManagerExclusiveVertical);
 
         simpleVerticalModelList = new ArrayList<>();
-        simpleVerticalModelList.add(new SimpleVerticalModel(R.drawable.small_placeholder, "Arhar Dal", "Yellow Arhar Dal in Noida", "20% OFF - use code BALAGERU", "Birr 250 per person | 2 hours", "Well Sanitized Kitchen", "3.5"));
-        simpleVerticalModelList.add(new SimpleVerticalModel(R.drawable.small_placeholder, "Arhar Dal", "Yellow Arhar Dal in Noida", "20% OFF - use code BALAGERU", "Birr 250 per person | 2 hours", "Well Sanitized Kitchen", "3.5"));
-        simpleVerticalModelList.add(new SimpleVerticalModel(R.drawable.small_placeholder, "Arhar Dal", "Yellow Arhar Dal in Noida", "20% OFF - use code BALAGERU", "Birr 250 per person | 2 hours", "Well Sanitized Kitchen", "3.5"));
-        simpleVerticalModelList.add(new SimpleVerticalModel(R.drawable.small_placeholder, "Arhar Dal", "Yellow Arhar Dal in Noida", "20% OFF - use code BALAGERU", "Birr 250 per person | 2 hours", "Well Sanitized Kitchen", "3.5"));
-        simpleVerticalModelList.add(new SimpleVerticalModel(R.drawable.small_placeholder, "Arhar Dal", "Yellow Arhar Dal in Noida", "20% OFF - use code BALAGERU", "Birr 250 per person | 2 hours", "Well Sanitized Kitchen", "3.5"));
-        simpleVerticalModelList.add(new SimpleVerticalModel(R.drawable.small_placeholder, "Arhar Dal", "Yellow Arhar Dal in Noida", "20% OFF - use code BALAGERU", "Birr 250 per person | 2 hours", "Well Sanitized Kitchen", "3.5"));
-        simpleVerticalModelList.add(new SimpleVerticalModel(R.drawable.small_placeholder, "Arhar Dal", "Yellow Arhar Dal in Noida", "20% OFF - use code BALAGERU", "Birr 250 per person | 2 hours", "Well Sanitized Kitchen", "3.5"));
+        Call<Users> exclusiveVerticalCall = apiInterface.balageruExclusiveVertical();
+        exclusiveVerticalCall.enqueue(new Callback<Users>() {
+            @Override
+            public void onResponse(Call<Users> call, Response<Users> response) {
+                simpleVerticalModelList = response.body().getBalageru_exclusive_vertical();
 
-        simpleVerticalAdapter = new SimpleVerticalAdapter(simpleVerticalModelList,getContext());
-        exclusiveVerticalRecyclerview.setAdapter(simpleVerticalAdapter);
-        simpleVerticalAdapter.notifyDataSetChanged();
+                simpleVerticalAdapter = new SimpleVerticalAdapter(simpleVerticalModelList,getContext());
+                exclusiveVerticalRecyclerview.setAdapter(simpleVerticalAdapter);
+                simpleVerticalAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onFailure(Call<Users> call, Throwable t) {
+
+            }
+        });
         ////////////////////////////////New arrival vertical slider end//////////////////////////////
 
 

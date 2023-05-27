@@ -45,6 +45,31 @@ public interface ApiInterface {
     @GET("api/strip_banners.php")
     Call<Users> getStripBanners();
 
+    /////////////getting all random_shops/////////////
+    @GET("api/random_shops.php")
+    Call<Users> getRandomShops();
 
+    /////////////getting all great offers shop/////////////
+    @GET("api/great_offers_shops.php")
+    Call<Users> greatOffersShop();
 
+    /////////////getting all great offers shop vertical/////////////
+    @GET("api/great_offers_shops_vertical.php")
+    Call<Users> greatOffersVerticalShop();
+
+    /////////////getting all new arrivals/////////////
+    @GET("api/new_arrivals_shops.php")
+    Call<Users> newArrivalsShops();
+
+    /////////////getting all new arrivals vertical/////////////
+    @GET("api/new_arrivals_shops_vertical.php")
+    Call<Users> newArrivalsVerticalShops();
+
+    /////////////getting all balageru exclusive/////////////
+    @GET("api/balageru_exclusive.php")
+    Call<Users> balageruExclusive();
+
+    /////////////getting all balageru exclusive vertical/////////////
+    @GET("api/balageru_exclusive_vertical.php")
+    Call<Users> balageruExclusiveVertical();
 }

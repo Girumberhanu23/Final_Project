@@ -118,14 +118,21 @@
                 android:layout_height="match_parent"
                 android:orientation="vertical">
 
-                <ImageView
-                    android:id="@+id/strip_banner_image"
+                <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="150dp"
                     android:layout_margin="8dp"
-                    android:background="@drawable/skip_button"
-                    android:src="@drawable/small_placeholder"
-                    android:scaleType="centerCrop"/>
+                    app:cardCornerRadius="8dp">
+
+                    <ImageView
+                        android:id="@+id/strip_banner_image"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:scaleType="matrix"
+                        android:src="@drawable/small_placeholder"/>
+
+                </androidx.cardview.widget.CardView>
+
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recyclerViewCategory"

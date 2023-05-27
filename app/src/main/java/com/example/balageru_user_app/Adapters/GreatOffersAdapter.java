@@ -39,18 +39,17 @@ public class GreatOffersAdapter extends RecyclerView.Adapter<GreatOffersAdapter.
 
         GreatOffersModel greatOffersModel = greatOffersModelList.get(position);
 
-        Glide.with(context).load(greatOffersModel.getShop_img()).placeholder(R.drawable.small_placeholder).into(holder.shopImg);
+        Glide.with(context).load(greatOffersModel.getShop_image()).placeholder(R.drawable.small_placeholder).into(holder.shopImg);
 
         holder.shop_name.setText(greatOffersModel.getShop_name());
-        holder.discount.setText(greatOffersModel.getDiscount());
+        holder.discount.setText(greatOffersModel.getDiscount()+"% OFF");
         holder.rating.setText(greatOffersModel.getRating());
-        holder.time.setText(greatOffersModel.getTime());
 
     }
 
     @Override
     public int getItemCount() {
-        return 8;
+        return greatOffersModelList.size();
     }
 
     public class GreatOfferViewHolder extends RecyclerView.ViewHolder {

@@ -39,13 +39,12 @@ public class SimpleVerticalAdapter extends RecyclerView.Adapter<SimpleVerticalAd
 
         SimpleVerticalModel simpleVerticalModel = simpleVerticalModelList.get(position);
 
-        Glide.with(context).load(simpleVerticalModel.getPro_img()).into(holder.proImg);
-        holder.pro_title.setText(simpleVerticalModel.getSimple_title());
-        holder.pro_desc.setText(simpleVerticalModel.getSimple_description());
-        holder.pro_quantity.setText(simpleVerticalModel.getSimple_quantity());
-        holder.pro_coupon.setText(simpleVerticalModel.getSimple_coupon());
-        holder.pro_status.setText(simpleVerticalModel.getSimple_status());
-        holder.pro_rating.setText(simpleVerticalModel.getSimple_rating());
+        Glide.with(context).load(simpleVerticalModel.getShop_image()).into(holder.proImg);
+        holder.pro_title.setText(simpleVerticalModel.getShop_name());
+        holder.pro_desc.setText(simpleVerticalModel.getLandmark()+","+simpleVerticalModel.getCity()+","+simpleVerticalModel.getState());
+        holder.pro_coupon.setText(simpleVerticalModel.getCoupon());
+        holder.pro_status.setText(simpleVerticalModel.getDescription());
+        holder.pro_rating.setText(simpleVerticalModel.getRating());
     }
 
     @Override
@@ -56,7 +55,7 @@ public class SimpleVerticalAdapter extends RecyclerView.Adapter<SimpleVerticalAd
     public class PlateViewHolder extends RecyclerView.ViewHolder {
 
         private ImageView proImg;
-        private TextView pro_title, pro_desc, pro_quantity, pro_coupon, pro_status, pro_rating;
+        private TextView pro_title, pro_desc, pro_coupon, pro_status, pro_rating;
 
         public PlateViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -64,7 +63,6 @@ public class SimpleVerticalAdapter extends RecyclerView.Adapter<SimpleVerticalAd
             proImg = (ImageView) itemView.findViewById(R.id.imageView5);
             pro_title = (TextView) itemView.findViewById(R.id.textView3);
             pro_desc = (TextView) itemView.findViewById(R.id.textView4);
-            pro_quantity = (TextView) itemView.findViewById(R.id.textView5);
             pro_coupon = (TextView) itemView.findViewById(R.id.textView6);
             pro_status = (TextView) itemView.findViewById(R.id.textView7);
             pro_rating = (TextView) itemView.findViewById(R.id.textView8);
