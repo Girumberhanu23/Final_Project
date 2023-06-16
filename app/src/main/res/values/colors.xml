@@ -11,7 +11,8 @@
     <color name="darkGrey">#777575</color>
     <color name="colorPrimary">#FFFFFFFF</color>
     <color name="colorPrimaryDark">#FFFFFFFF</color>
-    <color name="green_200">#B1FF00</color>
-    <color name="green_500">#77aa04</color>
+    <color name="green_200">#0FBB44</color>
+    <color name="green_500">#09824F</color>
     <color name="green_700">#5B7C12</color>
+    <color name="smoke">#F5F5F5</color>
 </resources>

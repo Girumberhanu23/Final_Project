@@ -16,6 +16,9 @@ public class Users {
     @SerializedName("user_id")
     private String UserId;
 
+    @SerializedName("user_name")
+    private String UserName;
+
     @SerializedName("strip_banner_image")
     private String strip_banner_image;
 
@@ -52,6 +55,9 @@ public class Users {
 
     public String getUserId() {
         return UserId;
+    }
+    public String getUserName(){
+        return UserName;
     }
 
     public String getStrip_banner_image() {

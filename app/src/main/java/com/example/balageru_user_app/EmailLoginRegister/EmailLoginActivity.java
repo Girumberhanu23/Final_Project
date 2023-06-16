@@ -1,27 +1,23 @@
 package com.example.balageru_user_app.EmailLoginRegister;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.os.Build;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
-import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.blogspot.atifsoftwares.animatoolib.Animatoo;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.balageru_user_app.HomeActivity;
 import com.example.balageru_user_app.MainActivity;
 import com.example.balageru_user_app.OperationRetrofitApi.ApiClient;
 import com.example.balageru_user_app.OperationRetrofitApi.ApiInterface;
 import com.example.balageru_user_app.OperationRetrofitApi.Users;
-import com.example.balageru_user_app.PhoneLoginRegister.PhoneRegisterActivity;
 import com.example.balageru_user_app.R;
 import com.example.balageru_user_app.Sessions.SessionManager;
 
@@ -34,7 +30,7 @@ public class EmailLoginActivity extends AppCompatActivity {
     private EditText email, password;
     private Button btnLogin;
     public static ApiInterface apiInterface;
-    String user_id;
+    String user_id, user_name;
     SessionManager sessionManager;
 
     @Override
@@ -93,7 +89,15 @@ public class EmailLoginActivity extends AppCompatActivity {
                     if(response.body().getResponse().equals("ok"))
                     {
                         user_id = response.body().getUserId();
+                        user_name = response.body().getUserName();
                         sessionManager.createSession(user_id);
+                        sessionManager.createSession(user_name);
+
+                        SharedPreferences user_id_stored= getSharedPreferences("USER_ID",MODE_PRIVATE);
+                        SharedPreferences.Editor editor=user_id_stored.edit();
+                        editor.putString("userIdStored", user_id);
+                        editor.putString("userNameStored", user_name);
+                        editor.commit();
 
                         Intent intent = new Intent(EmailLoginActivity.this, HomeActivity.class);
                         startActivity(intent);

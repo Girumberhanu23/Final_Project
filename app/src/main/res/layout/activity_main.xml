@@ -39,8 +39,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/button"
-        app:layout_constraintVertical_bias="0.72"
-        app:srcCompat="@drawable/balageru1" />
+        app:layout_constraintVertical_bias="0.657"
+        app:srcCompat="@drawable/logo" />
 
     <LinearLayout
         android:id="@+id/linear1"

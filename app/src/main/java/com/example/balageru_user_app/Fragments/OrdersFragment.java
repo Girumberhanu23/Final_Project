@@ -1,26 +1,43 @@
 package com.example.balageru_user_app.Fragments;
 
+import static android.content.Context.MODE_PRIVATE;
+
+import android.Manifest;
+import android.app.Activity;
+import android.app.Dialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
-
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
+import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.balageru_user_app.Adapters.BannerAdapter;
 import com.example.balageru_user_app.Adapters.CatAdapter;
 import com.example.balageru_user_app.Adapters.GreatOffersAdapter;
+import com.example.balageru_user_app.Adapters.ProductAdapter;
 import com.example.balageru_user_app.Adapters.SimpleVerticalAdapter;
 import com.example.balageru_user_app.MainActivity;
 import com.example.balageru_user_app.Models.BannerModel;
@@ -30,14 +47,25 @@ import com.example.balageru_user_app.Models.SimpleVerticalModel;
 import com.example.balageru_user_app.OperationRetrofitApi.ApiClient;
 import com.example.balageru_user_app.OperationRetrofitApi.ApiInterface;
 import com.example.balageru_user_app.OperationRetrofitApi.Users;
+import com.example.balageru_user_app.Product.Product;
+import com.example.balageru_user_app.Product.ProductDatabaseActivity;
+import com.example.balageru_user_app.Product.ProductDescription;
+import com.example.balageru_user_app.Product.RecyclerTouchListener;
 import com.example.balageru_user_app.R;
 import com.example.balageru_user_app.Sessions.SessionManager;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
-
-import org.w3c.dom.Text;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -46,7 +74,7 @@ import retrofit2.Response;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class OrdersFragment extends Fragment implements  View.OnClickListener{
+public class OrdersFragment extends Fragment implements  View.OnClickListener, ProductDatabaseActivity.UploadCallback {
 
 
 
@@ -62,8 +90,20 @@ public class OrdersFragment extends Fragment implements  View.OnClickListener{
     private TextView your_orders, favourite_orders, address_book, online_ordering_help, send_feedback, report_safety_emergency, rate_playstore;
     SessionManager sessionManager;
     private TextView login, logout;
+    private FloatingActionButton btn_post;
+    private EditText productName,productDesc, productPrice, productQty, productCat, productImg;
+    private Button cancel, btn_img;
+    private Uri selectedImageUri;
+    private static final int PICK_IMAGE_REQUEST=1;
+    private static final int PERMISSION_REQUEST_CODE=2;
+    private ImageView imageView;
+    Product product, singleProduct;
 
 
+
+
+    RecyclerView recyclerView, myProductRecyclerView;
+    ProductAdapter adapter;
 
     ///////////////category slider start/////////////////////
     RecyclerView recyclerViewCategory;
@@ -119,13 +159,159 @@ public class OrdersFragment extends Fragment implements  View.OnClickListener{
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_orders, container, false);
         sessionManager = new SessionManager(getContext());
-
-
+        Dialog dialog= new Dialog(getActivity());
+        dialog.setContentView(R.layout.post_product);
+        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        dialog.setCancelable(false);
         onSetNavigationDrawerEvents();
         apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        SharedPreferences user_id_stored=getActivity().getSharedPreferences("USER_ID",MODE_PRIVATE);
+        String user_id = user_id_stored.getString("userIdStored", null);
+        String sellerName = user_id_stored.getString("userNameStored", null);
+        String productId= String.valueOf(UUID.randomUUID());
+        btn_post= view.findViewById(R.id.btn_post);
+        productName = dialog.findViewById(R.id.etProductName);
+        productDesc = dialog.findViewById(R.id.etProductDesc);
+        productPrice = dialog.findViewById(R.id.etProductPrice);
+        productQty = dialog.findViewById(R.id.etProductQty);
+        productCat = dialog.findViewById(R.id.etProductCat);
+        cancel = dialog.findViewById(R.id.btn_cancel);
+        Button upload = dialog.findViewById(R.id.upload);
+        btn_img= dialog.findViewById(R.id.btn_img);
+        imageView= dialog.findViewById(R.id.product_img);
+
+        ArrayList<Product> dataList= new ArrayList<>();
+
+        btn_post.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.show();
+            }
+        });
+
+        upload.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                product= new Product(productName.getText().toString(),productDesc.getText().toString(),productPrice.getText().toString(),productQty.getText().toString(),productCat.getText().toString(),productId, user_id, selectedImageUri, sellerName);
+
+
+                ProductDatabaseActivity.uploadImage(selectedImageUri,OrdersFragment.this);
+            }
+        });
+
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+        btn_img.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                checkPermissionsAndOpenGallery();
+            }
+        });
+
+
+
+        recyclerView = view.findViewById(R.id.productList);
+
+        FirebaseFirestore database = FirebaseFirestore.getInstance();
+        database.collection("Product").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if(task.isSuccessful()){
+
+                    GridLayoutManager layoutManagerProduct = new GridLayoutManager(getActivity(), 2);
+
+
+                    Drawable drawable = ContextCompat.getDrawable(getContext(), R.drawable.divider);
+                    DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(), DividerItemDecoration.HORIZONTAL | DividerItemDecoration.VERTICAL);
+                    dividerItemDecoration.setDrawable(drawable);
+                    recyclerView.addItemDecoration(dividerItemDecoration);
+                    recyclerView.setLayoutManager(layoutManagerProduct);
+                    for(DocumentSnapshot snapshot:task.getResult()){
+                        singleProduct = new Product(snapshot.get("product_name").toString(), snapshot.get("product_description").toString(), snapshot.get("product_price").toString(), snapshot.get("product_quantity").toString(), snapshot.get("product_category").toString(), snapshot.get("product_id").toString(), snapshot.get("user_id").toString(), Uri.parse(snapshot.get("product_img_url").toString()),sellerName);
+                        dataList.add(singleProduct);
+                    }
+
+
+                    adapter = new ProductAdapter(dataList);
+                    recyclerView.setAdapter(adapter);
+                    adapter.notifyDataSetChanged();
+                    Log.d("TAG", "onCreateView: " + singleProduct.getProductId());
+                }
+                else{
+
+                }
+
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+
+            }
+        });
+
+        recyclerView.addOnItemTouchListener(new RecyclerTouchListener(getActivity(), recyclerView, new RecyclerTouchListener.ClickListener() {
+            @Override
+            public void onClick(View view, int position) {
+                Intent intent= new Intent(getActivity(), ProductDescription.class);
+                intent.putExtra("productName",dataList.get(position).getProductName());
+                intent.putExtra("sellerName",dataList.get(position).getSellerName());
+                intent.putExtra("productPrice",dataList.get(position).getProductPrice());
+                intent.putExtra("productDescription",dataList.get(position).getProductDesc());
+                intent.putExtra("productImageUrl",dataList.get(position).getProductImg().toString());
+                Toast.makeText(getActivity(), ""+ dataList.get(position).getSellerName(), Toast.LENGTH_SHORT).show();
+                startActivity(intent);
+
+            }
+
+            @Override
+            public void onLongClick(View view, int position) {
+
+            }
+        }));
 
         init();
         return view;
+    }
+
+    private void checkPermissionsAndOpenGallery() {
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_REQUEST_CODE);
+        } else {
+            openGallery();
+        }
+    }
+
+    private void openGallery() {
+        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(intent, PICK_IMAGE_REQUEST);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                openGallery();
+            } else {
+                Toast.makeText(requireContext(), "Permission Denied", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == Activity.RESULT_OK && data != null) {
+            Uri imageUri = data.getData();
+            selectedImageUri=imageUri;
+            imageView.setVisibility(View.VISIBLE);
+            imageView.setImageURI(imageUri);
+        }
     }
 
     private void init() {
@@ -204,28 +390,28 @@ public class OrdersFragment extends Fragment implements  View.OnClickListener{
         ////////////////////////////////Banner model list end//////////////////////////////
 
         ////////////////////////////////////Simple Vertical list start////////////////////////////
-        recyclerViewSimple = (RecyclerView) view.findViewById(R.id.recyclerViewSimple);
-        LinearLayoutManager layoutManagerSimpleVerticalSlider = new LinearLayoutManager(getContext());
-        layoutManagerSimpleVerticalSlider.setOrientation(RecyclerView.VERTICAL);
-        recyclerViewSimple.setLayoutManager(layoutManagerSimpleVerticalSlider);
-
-        simpleVerticalModelList = new ArrayList<>();
-        Call<Users> random_shops = apiInterface.getRandomShops();
-        random_shops.enqueue(new Callback<Users>() {
-            @Override
-            public void onResponse(Call<Users> call, Response<Users> response) {
-                simpleVerticalModelList = response.body().getRandom_shops();
-
-                simpleVerticalAdapter = new SimpleVerticalAdapter(simpleVerticalModelList,getContext());
-                recyclerViewSimple.setAdapter(simpleVerticalAdapter);
-                simpleVerticalAdapter.notifyDataSetChanged();
-            }
-
-            @Override
-            public void onFailure(Call<Users> call, Throwable t) {
-
-            }
-        });
+//        recyclerViewSimple = (RecyclerView) view.findViewById(R.id.recyclerViewSimple);
+//        LinearLayoutManager layoutManagerSimpleVerticalSlider = new LinearLayoutManager(getContext());
+//        layoutManagerSimpleVerticalSlider.setOrientation(RecyclerView.VERTICAL);
+//        recyclerViewSimple.setLayoutManager(layoutManagerSimpleVerticalSlider);
+//
+//        simpleVerticalModelList = new ArrayList<>();
+//        Call<Users> random_shops = apiInterface.getRandomShops();
+//        random_shops.enqueue(new Callback<Users>() {
+//            @Override
+//            public void onResponse(Call<Users> call, Response<Users> response) {
+//                simpleVerticalModelList = response.body().getRandom_shops();
+//
+//                simpleVerticalAdapter = new SimpleVerticalAdapter(simpleVerticalModelList,getContext());
+//                recyclerViewSimple.setAdapter(simpleVerticalAdapter);
+//                simpleVerticalAdapter.notifyDataSetChanged();
+//            }
+//
+//            @Override
+//            public void onFailure(Call<Users> call, Throwable t) {
+//
+//            }
+//        });
 
 
 
@@ -340,7 +526,7 @@ public class OrdersFragment extends Fragment implements  View.OnClickListener{
         ////////////////////////////////New arrival vertical slider end//////////////////////////////
 
 
-        ////////////////////////////////////New arrival horizontal model list start////////////////////////////
+        ////////////////////////////////////Exclusive horizontal model list start////////////////////////////
         exclusiveHorizontalRecyclerview = (RecyclerView) view.findViewById(R.id.exclusiveHorizontalRecyclerview);
         LinearLayoutManager layoutManagerExclusiveHorizontal = new LinearLayoutManager(getContext());
         layoutManagerExclusiveHorizontal.setOrientation(RecyclerView.HORIZONTAL);
@@ -363,10 +549,10 @@ public class OrdersFragment extends Fragment implements  View.OnClickListener{
 
             }
         });
-        ////////////////////////////////New arrival horizontal model list end//////////////////////////////
+        ////////////////////////////////Exclusive horizontal model list end//////////////////////////////
 
 
-        ////////////////////////////////////New arrival vertical slider start////////////////////////////
+        ////////////////////////////////////Exclusive vertical slider start////////////////////////////
         exclusiveVerticalRecyclerview = (RecyclerView) view.findViewById(R.id.exclusiveVerticalRecyclerview);
         LinearLayoutManager layoutManagerExclusiveVertical = new LinearLayoutManager(getContext());
         layoutManagerExclusiveVertical.setOrientation(RecyclerView.VERTICAL);
@@ -389,7 +575,7 @@ public class OrdersFragment extends Fragment implements  View.OnClickListener{
 
             }
         });
-        ////////////////////////////////New arrival vertical slider end//////////////////////////////
+        ////////////////////////////////Exclusive vertical slider end//////////////////////////////
 
 
     }
@@ -502,5 +688,31 @@ public class OrdersFragment extends Fragment implements  View.OnClickListener{
             login.setVisibility(View.GONE);
             logout.setVisibility(View.VISIBLE);
         }
+    }
+
+    @Override
+    public void onProgress(int progress) {
+
+    }
+
+    @Override
+    public void onSuccess(String downloadUrl) {
+        HashMap<String, Object> productToBePosted= new HashMap<>();
+        productToBePosted.put("product_name",product.getProductName());
+        productToBePosted.put("product_description",product.getProductDesc());
+        productToBePosted.put("product_price",product.getProductPrice());
+        productToBePosted.put("product_quantity",product.getProductQty());
+        productToBePosted.put("product_category",product.getProductCat());
+        productToBePosted.put("product_id",product.getProductId());
+        productToBePosted.put("user_id",product.getUserId());
+        productToBePosted.put("product_img_url",downloadUrl);
+
+        ProductDatabaseActivity.postProduct(productToBePosted, getActivity());
+        Toast.makeText(getActivity(), "Product posted Successfully!", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onFailure(String message) {
+
     }
 }
