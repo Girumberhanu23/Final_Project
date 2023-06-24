@@ -1,32 +1,51 @@
 package com.example.balageru_user_app.Fragments;
 
+import static android.content.Context.MODE_PRIVATE;
+
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
-
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.balageru_user_app.Adapters.CartAdapter;
+import com.example.balageru_user_app.Checkout;
 import com.example.balageru_user_app.MainActivity;
+import com.example.balageru_user_app.Order;
+import com.example.balageru_user_app.Product.Cart;
 import com.example.balageru_user_app.R;
 import com.example.balageru_user_app.Sessions.SessionManager;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
+
+import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class GoldFragment extends Fragment implements  View.OnClickListener{
+public class CartFragment extends Fragment implements  View.OnClickListener{
 
 
 
-    public GoldFragment() {
+    public CartFragment() {
         // Required empty public constructor
     }
 
@@ -39,12 +58,68 @@ public class GoldFragment extends Fragment implements  View.OnClickListener{
     SessionManager sessionManager;
     private TextView login, logout;
 
+    private CartAdapter adapter;
+    Button checkoutBtn;
+    RecyclerView myCart;
+
+    ArrayList<Cart> cartElement=new ArrayList<>();
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        view =  inflater.inflate(R.layout.fragment_gold, container, false);
+        view =  inflater.inflate(R.layout.fragment_cart, container, false);
         sessionManager = new SessionManager(getContext());
+
+        SharedPreferences user_id_stored=getActivity().getSharedPreferences("USER_ID",MODE_PRIVATE);
+
+        FirebaseFirestore firebaseFirestore= FirebaseFirestore.getInstance();
+
+        LinearLayoutManager layoutManager=new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL,false);
+        myCart= view.findViewById(R.id.myCart);
+        myCart.setLayoutManager(layoutManager);
+
+        checkoutBtn= view.findViewById(R.id.checkout);
+
+
+        firebaseFirestore.collection("Cart").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if(task.isSuccessful()){
+                    for(DocumentSnapshot snapshot: task.getResult()){
+                        if (snapshot.get("SellerId").toString().equals(user_id_stored.getString("userIdStored", null))){
+                            Cart singleCart = new Cart(snapshot.get("ProductName").toString(),snapshot.get("ProductPrice").toString(),snapshot.get("ProductQuantity").toString(), Uri.parse(snapshot.get("ProductImageUrl").toString()),snapshot.get("SellerId").toString());
+                            cartElement.add(singleCart);
+                        }
+                    }
+                    adapter=new CartAdapter(cartElement);
+                    myCart.setAdapter(adapter);
+                    adapter.notifyDataSetChanged();
+                    checkoutBtn.setText("Total Price: "+ calculateTotalPrice()+" \t ETB \n Checkout");
+                }
+                else
+                {
+
+                }
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+
+            }
+        });
+        checkoutBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getActivity(), Checkout.class);
+                intent.putExtra("TotalPrice", String.valueOf(calculateTotalPrice()));
+                startActivity(intent);
+
+
+
+            }
+        });
+
 
         onSetNavigationDrawerEvents();
         return view;
@@ -107,7 +182,9 @@ public class GoldFragment extends Fragment implements  View.OnClickListener{
                 Toast.makeText(getContext(),"eightMMGold", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.your_orders:
-                Toast.makeText(getContext(),"your_orders", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(getActivity(), Order.class);
+                startActivity(intent);
+
                 break;
             case R.id.favourite_orders:
                 Toast.makeText(getContext(),"favourite_orders", Toast.LENGTH_SHORT).show();
@@ -161,5 +238,37 @@ public class GoldFragment extends Fragment implements  View.OnClickListener{
             login.setVisibility(View.GONE);
             logout.setVisibility(View.VISIBLE);
         }
+    }
+    public Double calculateTotalPrice() {
+        Double totalPrice = 0.0;
+
+        for (int i = 0; i < cartElement.size(); i++) {
+            try {
+                Double productPrice = Double.parseDouble(cartElement.get(i).getProductPrice());
+                Double productQuantity = Double.parseDouble(cartElement.get(i).getProductQuantity());
+                totalPrice += (productPrice * productQuantity);
+            } catch (NumberFormatException e) {
+                System.err.println("Error parsing price or quantity for cart element at index " + i);
+                e.printStackTrace();
+                // Handle the error appropriately or skip the element if necessary
+            }
+        }
+
+        return totalPrice;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        adapter=new CartAdapter(cartElement);
+        myCart.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
+        checkoutBtn.setText("Total Price: "+ calculateTotalPrice()+" \t ETB \n Checkout");
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        cartElement.clear();
     }
 }

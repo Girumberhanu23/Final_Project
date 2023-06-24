@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.balageru_user_app.HomeActivity;
@@ -20,6 +21,13 @@ import com.example.balageru_user_app.OperationRetrofitApi.ApiInterface;
 import com.example.balageru_user_app.OperationRetrofitApi.Users;
 import com.example.balageru_user_app.R;
 import com.example.balageru_user_app.Sessions.SessionManager;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -32,6 +40,7 @@ public class EmailLoginActivity extends AppCompatActivity {
     public static ApiInterface apiInterface;
     String user_id, user_name;
     SessionManager sessionManager;
+    ProgressDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +53,10 @@ public class EmailLoginActivity extends AppCompatActivity {
         apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
         sessionManager = new SessionManager(this);
 
+        dialog = new ProgressDialog(this);
+        dialog.setTitle("Logging...");
+        dialog.setMessage("Please wait while we are checking your credentials");
+        dialog.setCanceledOnTouchOutside(false);
         init();
     }
 
@@ -55,7 +68,8 @@ public class EmailLoginActivity extends AppCompatActivity {
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Login();
+//                Login();
+                firebaseLogin(email.getText().toString(), password.getText().toString());
             }
         });
 
@@ -75,11 +89,7 @@ public class EmailLoginActivity extends AppCompatActivity {
         }
         else
         {
-            ProgressDialog dialog = new ProgressDialog(this);
-            dialog.setTitle("Logging...");
-            dialog.setMessage("Please wait while we are checking your credentials");
-            dialog.show();
-            dialog.setCanceledOnTouchOutside(false);
+
 
             Call<Users> call = apiInterface.performEmailLogin(user_email, user_password);
             call.enqueue(new Callback<Users>() {
@@ -93,15 +103,10 @@ public class EmailLoginActivity extends AppCompatActivity {
                         sessionManager.createSession(user_id);
                         sessionManager.createSession(user_name);
 
-                        SharedPreferences user_id_stored= getSharedPreferences("USER_ID",MODE_PRIVATE);
-                        SharedPreferences.Editor editor=user_id_stored.edit();
-                        editor.putString("userIdStored", user_id);
-                        editor.putString("userNameStored", user_name);
-                        editor.commit();
 
-                        Intent intent = new Intent(EmailLoginActivity.this, HomeActivity.class);
-                        startActivity(intent);
-                        finish();
+//                        Intent intent = new Intent(EmailLoginActivity.this, HomeActivity.class);
+//                        startActivity(intent);
+//                        finish();
 //                        Animatoo.animateSwipeLeft(EmailLoginActivity.this)
                         dialog.dismiss();
                     }
@@ -133,5 +138,48 @@ public class EmailLoginActivity extends AppCompatActivity {
         Intent intent = new Intent(EmailLoginActivity.this, MainActivity.class);
         startActivity(intent);
 //        Animatoo.animateSwipeRight(this);
+    }
+    public void firebaseLogin(String email, String password){
+        dialog.show();
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        auth.signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                if(task.isSuccessful()){
+                    db.collection("User").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            for(DocumentSnapshot snapshot: task.getResult()){
+                                if(email.equals(snapshot.get("UserEmail"))){
+
+                                    SharedPreferences user_id_stored= getSharedPreferences("USER_ID",MODE_PRIVATE);
+                                    SharedPreferences.Editor editor=user_id_stored.edit();
+                                    editor.putString("userNameStored", snapshot.get("UserName").toString());
+                                    editor.putString("userIdStored", snapshot.getId());
+                                    editor.putString("userEmailStored", snapshot.get("UserEmail").toString());
+                                    editor.putString("userPhoneStored", snapshot.get("UserPhone").toString());
+                                    editor.putString("userCity", snapshot.get("city").toString());
+                                    editor.putString("userSubcity", snapshot.get("subCity").toString());
+
+
+                                    editor.commit();
+                                    dialog.dismiss();
+                                    Intent intent = new Intent(EmailLoginActivity.this, HomeActivity.class);
+                                    startActivity(intent);
+                                }
+                            }
+                        }
+                    });
+                }else{
+                    Toast.makeText(EmailLoginActivity.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                    dialog.dismiss();
+                }
+
+
+
+
+            }
+        });
     }
 }

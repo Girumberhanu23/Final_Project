@@ -1,31 +1,30 @@
 package com.example.balageru_user_app;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.RecyclerView;
-
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
-import android.widget.Toast;
 
-import com.example.balageru_user_app.Adapters.CatAdapter;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.balageru_user_app.Fragments.CartFragment;
 import com.example.balageru_user_app.Fragments.GoOutFragment;
-import com.example.balageru_user_app.Fragments.GoldFragment;
 import com.example.balageru_user_app.Fragments.OrdersFragment;
 import com.example.balageru_user_app.Fragments.VideosFragment;
-import com.example.balageru_user_app.Models.CategoryModel;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-
-import java.util.List;
+import com.google.android.material.navigation.NavigationBarView;
 
 public class HomeActivity extends AppCompatActivity {
 
     BottomNavigationView bottomNavigation;
     FrameLayout frameLayout;
 
+    CartFragment cartFragment =new CartFragment();
+    GoOutFragment goOutFragment=new GoOutFragment();
+    OrdersFragment ordersFragment=new OrdersFragment();
+    VideosFragment videosFragment=new VideosFragment();
 
 
     @Override
@@ -34,42 +33,47 @@ public class HomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_home);
 
 
+
+
+
+
         ///////////changing the color of status text color//////////////////////
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
         ///////////changing the color of status text color//////////////////////
-
+        getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, ordersFragment).commit();
         frameLayout = (FrameLayout) findViewById(R.id.frameLayout);
         bottomNavigation = (BottomNavigationView) findViewById(R.id.bottomNavigation);
-        bottomNavigation.setOnNavigationItemSelectedListener(navigation);
+
+        bottomNavigation.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId())
+                {
+                    case R.id.orders:
+                        getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, ordersFragment).commit();
+                        break;
+                    case R.id.goout:
+                        getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, goOutFragment).commit();
+                        break;
+                    case R.id.gold:
+                        getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, cartFragment).commit();
+                        break;
+                    case R.id.videos:
+                        getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, videosFragment).commit();
+                        break;
+                }
+                return true;
+            }
+        });
+        SharedPreferences user_id_stored= getSharedPreferences("USER_ID",MODE_PRIVATE);
+//        Toast.makeText(HomeActivity.this, user_id_stored.getString("userNameStored", null), Toast.LENGTH_LONG).show();
 
         //////////////replacing by default fragment on home activity///////////////
     }
-    private BottomNavigationView.OnNavigationItemSelectedListener navigation =
-            new BottomNavigationView.OnNavigationItemSelectedListener() {
-        @Override
-                public boolean onNavigationItemSelected(@NonNull MenuItem item){
 
-            Fragment selectedFragment = null;
+    @Override
+    protected void onStart() {
+        super.onStart();
 
-
-            switch (item.getItemId())
-            {
-                case R.id.orders:
-                    selectedFragment = new OrdersFragment();
-                    break;
-                case R.id.goout:
-                    selectedFragment = new GoOutFragment();
-                    break;
-                case R.id.gold:
-                    selectedFragment = new GoldFragment();
-                    break;
-                case R.id.videos:
-                    selectedFragment = new VideosFragment();
-                    break;
-            }
-            getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout,
-                    selectedFragment).commit();
-            return true;
-            }
-        };
+    }
 }

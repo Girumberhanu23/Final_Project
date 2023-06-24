@@ -7,11 +7,12 @@
     android:layout_height="match_parent"
     android:id="@+id/drawerLayout"
     android:fitsSystemWindows="true"
-    tools:openDrawer="start">
+    tools:openDrawer="start"
+    android:background="@drawable/background">
     <!--    tools:context=".Fragments.OrdersFragment"-->
 
     <include
-        layout="@layout/layout_order_dashboard"
+        layout="@layout/layout_goout_dashboard"
         android:id="@+id/layout_dashboard"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>

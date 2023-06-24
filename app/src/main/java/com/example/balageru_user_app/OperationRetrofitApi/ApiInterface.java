@@ -33,6 +33,11 @@ public interface ApiInterface {
             @Query("user_phone") String user_phone
     );
 
+    /////////////getting all users/////////////
+    @GET("api/users.php")
+    Call<Users> getUsers();
+
+
     /////////////getting all categories/////////////
     @GET("api/categories.php")
     Call<Users> getCategories();

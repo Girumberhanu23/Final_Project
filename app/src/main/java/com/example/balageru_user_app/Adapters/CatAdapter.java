@@ -59,4 +59,7 @@ public class CatAdapter extends RecyclerView.Adapter<CatAdapter.PlateViewHolder>
             cat_title = (TextView) itemView.findViewById(R.id.textView2);
         }
     }
+    public List<CategoryModel> getData(){
+        return categoryModelList;
+    }
 }

@@ -2,8 +2,8 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
 
 
     <LinearLayout
@@ -17,7 +17,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
-            android:id="@+id/imageView8"
+            android:id="@+id/cartImage"
             android:layout_width="130dp"
             android:layout_height="130dp"
             android:layout_marginRight="10dp"
@@ -31,6 +31,7 @@
             android:orientation="vertical">
 
             <TextView
+                android:id="@+id/cartName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Product Name"
@@ -50,6 +51,7 @@
                     android:textColor="@color/black" />
 
                 <TextView
+                    android:id="@+id/cartQuantity"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="5 Kilo"
@@ -68,6 +70,7 @@
                     android:textColor="@color/black" />
 
                 <TextView
+                    android:id="@+id/cartPrice"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="450 Birr"
@@ -78,19 +81,5 @@
 
     </LinearLayout>
 
-    <Button
-        android:id="@+id/checkout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="40dp"
-        android:paddingHorizontal="50dp"
-        android:paddingVertical="10dp"
-        android:elevation="40dp"
-        android:text="CheckOut"
-        android:textColor="@color/black"
-        android:backgroundTint="@color/green_200"
-        app:cornerRadius="15dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

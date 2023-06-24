@@ -65,7 +65,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         holder.getProductName().setText(localDataSet.get(position).getProductName());
         holder.getProductPrice().setText(localDataSet.get(position).getProductPrice());
 
-            Picasso.get().load(localDataSet.get(position).getProductImg()).into(holder.getProductImage());
+        Picasso.get().load(localDataSet.get(position).getProductImg()).into(holder.getProductImage());
 
 
 

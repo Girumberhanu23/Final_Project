@@ -7,14 +7,13 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@color/white">
+    android:orientation="vertical">
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:id="@+id/layoutOne"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:background="@color/white"
+        android:background="@drawable/background"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -31,7 +30,7 @@
                 android:id="@+id/collapsingtoolbarlayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/white"
+
                 app:layout_scrollFlags="scroll|snap|enterAlwaysCollapsed">
 
                 <RelativeLayout
@@ -67,9 +66,9 @@
                         android:id="@+id/navigationBar"
                         android:layout_width="30dp"
                         android:layout_height="30dp"
-                        android:layout_marginLeft="8dp"
+                        android:layout_marginLeft="12dp"
                         android:layout_centerVertical="true"
-                        android:layout_marginRight="8dp"
+                        android:layout_marginRight="12dp"
                         android:layout_alignParentEnd="true"
                         android:src="@drawable/ic_baseline_menu_24"
                         app:tint="@color/darkGrey" />
@@ -83,28 +82,44 @@
                 android:id="@+id/collapsingtoolbarlayout1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/white"
+
                 app:layout_scrollFlags="scroll|snap|exitUntilCollapsed">
 
                 <androidx.appcompat.widget.Toolbar
                     android:id="@+id/toolbar1"
                     android:layout_width="match_parent"
                     android:layout_height="?attr/actionBarSize"
-                    android:background="@color/white"
+
                     app:layout_collapseMode="pin"
                     android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
-                    <EditText
+                    <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="45dp"
-                        android:layout_marginRight="16dp"
-                        android:drawableTint="@color/grey"
-                        android:textColorHint="@color/grey"
-                        android:drawablePadding="8dp"
-                        android:padding="8dp"
-                        android:focusable="false"
-                        android:drawableLeft="@drawable/search"
-                        android:hint="Search for grocery"/>
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+                        <EditText
+                            android:id="@+id/searchProduct"
+                            android:layout_width="match_parent"
+                            android:layout_height="45dp"
+                            android:layout_marginRight="16dp"
+                            android:drawableTint="@color/grey"
+                            android:textColorHint="@color/grey"
+                            android:textColor="@color/black"
+                            android:drawablePadding="8dp"
+                            android:elevation="0dp"
+                            android:padding="8dp"
+                            android:layout_weight="1"
+                            android:drawableLeft="@drawable/search"
+                            android:hint="Search for grocery"/>
+                        <ImageButton
+                            android:id="@+id/btnSearch"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/search"
+                            android:backgroundTint="@color/green_200"/>
+                    </LinearLayout>
+
+
 
                 </androidx.appcompat.widget.Toolbar>
 
@@ -136,6 +151,15 @@
                         android:src="@drawable/small_placeholder"/>
 
                 </androidx.cardview.widget.CardView>
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerViewCategory"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerViewBanner"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
 
                 <TextView
                     android:layout_width="match_parent"
@@ -143,6 +167,11 @@
                     android:layout_margin="8dp"
                     android:letterSpacing="0.3"
                     android:text="YOUD PRODUCTS"/>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerViewUser"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/yourProducts"
@@ -156,15 +185,9 @@
                     app:spanCount="2"/>
 
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/recyclerViewCategory"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/recyclerViewBanner"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+
+
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recyclerViewSimple"

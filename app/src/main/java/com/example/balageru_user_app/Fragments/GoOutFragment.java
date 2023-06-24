@@ -2,10 +2,6 @@ package com.example.balageru_user_app.Fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
-
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +10,11 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
+
 import com.example.balageru_user_app.MainActivity;
+import com.example.balageru_user_app.Order;
 import com.example.balageru_user_app.R;
 import com.example.balageru_user_app.Sessions.SessionManager;
 import com.google.android.material.navigation.NavigationView;
@@ -107,7 +107,9 @@ public class GoOutFragment extends Fragment implements  View.OnClickListener {
                 Toast.makeText(getContext(),"eightMMGold", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.your_orders:
-                Toast.makeText(getContext(),"your_orders", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(getActivity(), Order.class);
+                startActivity(intent);
+
                 break;
             case R.id.favourite_orders:
                 Toast.makeText(getContext(),"favourite_orders", Toast.LENGTH_SHORT).show();

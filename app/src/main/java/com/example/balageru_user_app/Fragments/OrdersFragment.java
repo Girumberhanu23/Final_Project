@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -39,14 +40,17 @@ import com.example.balageru_user_app.Adapters.CatAdapter;
 import com.example.balageru_user_app.Adapters.GreatOffersAdapter;
 import com.example.balageru_user_app.Adapters.ProductAdapter;
 import com.example.balageru_user_app.Adapters.SimpleVerticalAdapter;
+import com.example.balageru_user_app.Adapters.UserAdapter;
 import com.example.balageru_user_app.MainActivity;
 import com.example.balageru_user_app.Models.BannerModel;
 import com.example.balageru_user_app.Models.CategoryModel;
 import com.example.balageru_user_app.Models.GreatOffersModel;
 import com.example.balageru_user_app.Models.SimpleVerticalModel;
+import com.example.balageru_user_app.Models.UserModel;
 import com.example.balageru_user_app.OperationRetrofitApi.ApiClient;
 import com.example.balageru_user_app.OperationRetrofitApi.ApiInterface;
 import com.example.balageru_user_app.OperationRetrofitApi.Users;
+import com.example.balageru_user_app.Order;
 import com.example.balageru_user_app.Product.Product;
 import com.example.balageru_user_app.Product.ProductDatabaseActivity;
 import com.example.balageru_user_app.Product.ProductDescription;
@@ -66,6 +70,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -91,19 +97,28 @@ public class OrdersFragment extends Fragment implements  View.OnClickListener, P
     SessionManager sessionManager;
     private TextView login, logout;
     private FloatingActionButton btn_post;
-    private EditText productName,productDesc, productPrice, productQty, productCat, productImg;
+    private EditText productName,productDesc, productPrice, productQty, productCat, productImg, searchInput;
     private Button cancel, btn_img;
     private Uri selectedImageUri;
     private static final int PICK_IMAGE_REQUEST=1;
     private static final int PERMISSION_REQUEST_CODE=2;
     private ImageView imageView;
     Product product, singleProduct;
+    private ImageButton btnSearch;
+
+    ArrayList<Product> dataList;
 
 
 
 
     RecyclerView recyclerView, myProductRecyclerView;
     ProductAdapter adapter;
+
+    ///////////////USER start/////////////////////
+    RecyclerView recyclerViewUser;
+    private UserAdapter userAdapter;
+    private List<UserModel> userModelList;
+    ///////////////USER end/////////////////////
 
     ///////////////category slider start/////////////////////
     RecyclerView recyclerViewCategory;
@@ -180,7 +195,13 @@ public class OrdersFragment extends Fragment implements  View.OnClickListener, P
         btn_img= dialog.findViewById(R.id.btn_img);
         imageView= dialog.findViewById(R.id.product_img);
 
-        ArrayList<Product> dataList= new ArrayList<>();
+        searchInput = view.findViewById(R.id.searchProduct);
+        btnSearch = view.findViewById(R.id.btnSearch);
+
+        dataList= new ArrayList<>();
+
+        recyclerViewCategory = (RecyclerView) view.findViewById(R.id.recyclerViewCategory);
+
 
         btn_post.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -226,7 +247,7 @@ public class OrdersFragment extends Fragment implements  View.OnClickListener, P
                     GridLayoutManager layoutManagerProduct = new GridLayoutManager(getActivity(), 2);
 
 
-                    Drawable drawable = ContextCompat.getDrawable(getContext(), R.drawable.divider);
+                    Drawable drawable = ContextCompat.getDrawable(getActivity().getApplicationContext(), R.drawable.divider);
                     DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(), DividerItemDecoration.HORIZONTAL | DividerItemDecoration.VERTICAL);
                     dividerItemDecoration.setDrawable(drawable);
                     recyclerView.addItemDecoration(dividerItemDecoration);
@@ -254,12 +275,26 @@ public class OrdersFragment extends Fragment implements  View.OnClickListener, P
             }
         });
 
+        recyclerViewCategory.addOnItemTouchListener(new RecyclerTouchListener(getActivity(), recyclerViewCategory, new RecyclerTouchListener.ClickListener() {
+            @Override
+            public void onClick(View view, int position) {
+                adapter=new ProductAdapter(searchProduct(catAdapter.getData().get(position).getCat_title()));
+                recyclerView.setAdapter(adapter);
+                adapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onLongClick(View view, int position) {
+
+            }
+        }));
         recyclerView.addOnItemTouchListener(new RecyclerTouchListener(getActivity(), recyclerView, new RecyclerTouchListener.ClickListener() {
             @Override
             public void onClick(View view, int position) {
                 Intent intent= new Intent(getActivity(), ProductDescription.class);
                 intent.putExtra("productName",dataList.get(position).getProductName());
                 intent.putExtra("sellerName",dataList.get(position).getSellerName());
+                intent.putExtra("sellerId",dataList.get(position).getUserId());
                 intent.putExtra("productPrice",dataList.get(position).getProductPrice());
                 intent.putExtra("productDescription",dataList.get(position).getProductDesc());
                 intent.putExtra("productImageUrl",dataList.get(position).getProductImg().toString());
@@ -273,6 +308,15 @@ public class OrdersFragment extends Fragment implements  View.OnClickListener, P
 
             }
         }));
+        btnSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                adapter = new ProductAdapter(searchProduct(searchInput.getText().toString()));
+                recyclerView.setAdapter(adapter);
+                adapter.notifyDataSetChanged();
+            }
+        });
 
         init();
         return view;
@@ -316,6 +360,33 @@ public class OrdersFragment extends Fragment implements  View.OnClickListener, P
 
     private void init() {
 
+        ////////////////////////////User start///////////////////////
+//        recyclerViewUser = (RecyclerView) view.findViewById(R.id.recyclerViewUser);
+//        LinearLayoutManager layoutManagerUser = new LinearLayoutManager(getContext());
+//        layoutManagerUser.setOrientation(RecyclerView.HORIZONTAL);
+//        recyclerViewUser.setLayoutManager(layoutManagerUser);
+//
+//        userModelList = new ArrayList<>();
+//        Call<Users> userCall = apiInterface.getUsers();
+//        userCall.enqueue(new Callback<Users>() {
+//            @Override
+//            public void onResponse(Call<Users> userCall, Response<Users> response) {
+//
+//                userModelList = response.body().getUsers();
+//
+//                userAdapter = new UserAdapter(userModelList,getContext());
+//                recyclerViewUser.setAdapter(userAdapter);
+//                userAdapter.notifyDataSetChanged();
+//            }
+//
+//            @Override
+//            public void onFailure(Call<Users> categoryCall, Throwable t) {
+//
+//            }
+//        });
+
+        ////////////////////////////User end///////////////////////
+
         //////////////////strip banner image start///////////////////////
         strip_banner_image= (ImageView) view.findViewById(R.id.strip_banner_image);
         Call<Users> stripBannerCall = apiInterface.getStripBanners();
@@ -336,7 +407,7 @@ public class OrdersFragment extends Fragment implements  View.OnClickListener, P
 
 
         ////////////////////////////Category model start///////////////////////
-        recyclerViewCategory = (RecyclerView) view.findViewById(R.id.recyclerViewCategory);
+
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         layoutManager.setOrientation(RecyclerView.HORIZONTAL);
         recyclerViewCategory.setLayoutManager(layoutManager);
@@ -621,6 +692,7 @@ public class OrdersFragment extends Fragment implements  View.OnClickListener, P
 
     @Override
     public void onClick(View v) {
+
         switch (v.getId()){
             case R.id.navigationBar:
                 drawerLayout.openDrawer(navigationView, true);
@@ -638,7 +710,9 @@ public class OrdersFragment extends Fragment implements  View.OnClickListener, P
                 Toast.makeText(getContext(),"eightMMGold", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.your_orders:
-                Toast.makeText(getContext(),"your_orders", Toast.LENGTH_SHORT).show();
+                Intent intent1 = new Intent(getActivity(), Order.class);
+                startActivity(intent1);
+
                 break;
             case R.id.favourite_orders:
                 Toast.makeText(getContext(),"favourite_orders", Toast.LENGTH_SHORT).show();
@@ -668,14 +742,14 @@ public class OrdersFragment extends Fragment implements  View.OnClickListener, P
 
         Intent intent = new Intent(getContext(), MainActivity.class);
         startActivity(intent);
-        getActivity().finish();
+
 //        Animatoo.animateSwipeRight(getContext());
     }
     private void Login() {
 
         Intent intent = new Intent(getContext(), MainActivity.class);
         startActivity(intent);
-        getActivity().finish();
+
 //        Animatoo.animateSwipeRight(getContext());
     }
 
@@ -715,4 +789,22 @@ public class OrdersFragment extends Fragment implements  View.OnClickListener, P
     public void onFailure(String message) {
 
     }
+    public ArrayList<Product> searchProduct(String searchString)  {
+        ArrayList<Product>searchResult=new ArrayList<>();
+        Pattern pattern= Pattern.compile(searchString,Pattern.CASE_INSENSITIVE);
+        for (int i=0; i<dataList.size(); i++){
+            Matcher nameMatcher=pattern.matcher(dataList.get(i).getProductName());
+            boolean nameMatchFound=nameMatcher.find();
+            Matcher priceMatcher=pattern.matcher(dataList.get(i).getProductPrice());
+            boolean priceMatcherFound=priceMatcher.find();
+            Matcher categoryMatcher=pattern.matcher(dataList.get(i).getProductCat());
+            boolean categoryMatcherFound=categoryMatcher.find();
+            if(nameMatchFound || priceMatcherFound || categoryMatcherFound){
+                searchResult.add(dataList.get(i));
+            }
+
+        }
+        return searchResult;
+    }
+
 }

@@ -4,6 +4,7 @@ import com.example.balageru_user_app.Models.BannerModel;
 import com.example.balageru_user_app.Models.CategoryModel;
 import com.example.balageru_user_app.Models.GreatOffersModel;
 import com.example.balageru_user_app.Models.SimpleVerticalModel;
+import com.example.balageru_user_app.Models.UserModel;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
@@ -18,6 +19,9 @@ public class Users {
 
     @SerializedName("user_name")
     private String UserName;
+
+    @SerializedName("users")
+    private List<UserModel> users;
 
     @SerializedName("strip_banner_image")
     private String strip_banner_image;
@@ -66,6 +70,10 @@ public class Users {
 
     public List<CategoryModel> getCategory() {
         return category;
+    }
+
+    public List<UserModel> getUsers() {
+        return users;
     }
 
     public List<BannerModel> getBanners() {

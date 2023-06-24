@@ -1,11 +1,10 @@
 package com.example.balageru_user_app.Fragments;
 
+import static android.content.Context.MODE_PRIVATE;
+
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +12,9 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
 
 import com.example.balageru_user_app.MainActivity;
 import com.example.balageru_user_app.R;
@@ -37,7 +39,8 @@ public class VideosFragment extends Fragment implements  View.OnClickListener {
     private RelativeLayout bookmarks, eightMMGold;
     private TextView your_orders, favourite_orders, address_book, online_ordering_help, send_feedback, report_safety_emergency, rate_playstore;
     SessionManager sessionManager;
-    private TextView login, logout;
+    private TextView login, logout, name, email, phone, city, subCity;
+
 
 
     @Override
@@ -46,6 +49,19 @@ public class VideosFragment extends Fragment implements  View.OnClickListener {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_videos, container, false);
         sessionManager = new SessionManager(getContext());
+
+        SharedPreferences user_id_stored= getActivity().getSharedPreferences("USER_ID",MODE_PRIVATE);
+        name = view.findViewById(R.id.txtName);
+        email = view. findViewById(R.id.txtEmail);
+        phone = view. findViewById(R.id.txtPhone);
+        city = view. findViewById(R.id.getcity);
+        subCity = view. findViewById(R.id.getsubcity);
+        name.setText(user_id_stored.getString("userNameStored", null));
+        email.setText(user_id_stored.getString("userEmailStored", null));
+        phone.setText(user_id_stored.getString("userPhoneStored", null));
+        city.setText(user_id_stored.getString("userCity", null));
+        subCity.setText(user_id_stored.getString("userSubcity", null));
+
 
         onSetNavigationDrawerEvents();
         return view;
