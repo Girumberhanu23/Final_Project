@@ -3,24 +3,24 @@ package com.example.balageru_user_app;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatButton;
 
-public class HelpAndSupport extends AppCompatActivity {
+public class TermsAndConditions extends AppCompatActivity {
 
-    Button btn_Ok_help_and_support;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_help_and_support);
+        setContentView(R.layout.activity_terms_and_conditions);
 
-        btn_Ok_help_and_support= findViewById(R.id.btn_Ok_help_and_support);
+        AppCompatButton agreeTerms= findViewById(R.id.agreeTerms);
 
-        btn_Ok_help_and_support.setOnClickListener(new View.OnClickListener() {
+        agreeTerms.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(HelpAndSupport.this, HomeActivity.class);
+                Intent intent = new Intent(TermsAndConditions.this, HomeActivity.class);
                 startActivity(intent);
             }
         });

@@ -65,7 +65,7 @@ public class ProductDescription extends AppCompatActivity {
 
         String productImageUrl= String.valueOf(Uri.parse(getIntent().getStringExtra("productImageUrl")));
         Picasso.get().load(productImageUrl).into(prod_Image);
-        prod_Price.setText(productPrice);
+        prod_Price.setText(productPrice + " ETB");
         prod_Description.setText(productDescription);
         prod_Name.setText(productName);
         seller_Name.setText(sellerName);

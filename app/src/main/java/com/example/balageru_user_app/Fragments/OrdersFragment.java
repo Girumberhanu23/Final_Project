@@ -5,6 +5,7 @@ import static android.content.Context.MODE_PRIVATE;
 import android.Manifest;
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -20,7 +21,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -41,6 +41,7 @@ import com.example.balageru_user_app.Adapters.GreatOffersAdapter;
 import com.example.balageru_user_app.Adapters.ProductAdapter;
 import com.example.balageru_user_app.Adapters.SimpleVerticalAdapter;
 import com.example.balageru_user_app.Adapters.UserAdapter;
+import com.example.balageru_user_app.HelpAndSupport;
 import com.example.balageru_user_app.MainActivity;
 import com.example.balageru_user_app.Models.BannerModel;
 import com.example.balageru_user_app.Models.CategoryModel;
@@ -57,6 +58,7 @@ import com.example.balageru_user_app.Product.ProductDescription;
 import com.example.balageru_user_app.Product.RecyclerTouchListener;
 import com.example.balageru_user_app.R;
 import com.example.balageru_user_app.Sessions.SessionManager;
+import com.example.balageru_user_app.TermsAndConditions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
@@ -92,10 +94,9 @@ public class OrdersFragment extends Fragment implements  View.OnClickListener, P
     ImageView navigationBar, strip_banner_image;
     NavigationView navigationView;
     private View view;
-    private RelativeLayout bookmarks, eightMMGold;
-    private TextView your_orders, favourite_orders, address_book, online_ordering_help, send_feedback, report_safety_emergency, rate_playstore;
+    private TextView your_orders, helpAndSupport, termsAndConditions, callCenter;
     SessionManager sessionManager;
-    private TextView login, logout;
+    private TextView login, logout, location;
     private FloatingActionButton btn_post;
     private EditText productName,productDesc, productPrice, productQty, productCat, productImg, searchInput;
     private Button cancel, btn_img;
@@ -105,6 +106,9 @@ public class OrdersFragment extends Fragment implements  View.OnClickListener, P
     private ImageView imageView;
     Product product, singleProduct;
     private ImageButton btnSearch;
+
+
+    private String phoneNumber = "0923938609";
 
     ArrayList<Product> dataList;
 
@@ -183,6 +187,10 @@ public class OrdersFragment extends Fragment implements  View.OnClickListener, P
         SharedPreferences user_id_stored=getActivity().getSharedPreferences("USER_ID",MODE_PRIVATE);
         String user_id = user_id_stored.getString("userIdStored", null);
         String sellerName = user_id_stored.getString("userNameStored", null);
+        String city = user_id_stored.getString("userCity", null);
+        String subCity = user_id_stored.getString("userSubcity", null);
+        location = view.findViewById(R.id.location);
+        location.setText( subCity + ", "+ city);
         String productId= String.valueOf(UUID.randomUUID());
         btn_post= view.findViewById(R.id.btn_post);
         productName = dialog.findViewById(R.id.etProductName);
@@ -197,6 +205,8 @@ public class OrdersFragment extends Fragment implements  View.OnClickListener, P
 
         searchInput = view.findViewById(R.id.searchProduct);
         btnSearch = view.findViewById(R.id.btnSearch);
+
+
 
         dataList= new ArrayList<>();
 
@@ -247,11 +257,15 @@ public class OrdersFragment extends Fragment implements  View.OnClickListener, P
                     GridLayoutManager layoutManagerProduct = new GridLayoutManager(getActivity(), 2);
 
 
-                    Drawable drawable = ContextCompat.getDrawable(getActivity().getApplicationContext(), R.drawable.divider);
-                    DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(), DividerItemDecoration.HORIZONTAL | DividerItemDecoration.VERTICAL);
-                    dividerItemDecoration.setDrawable(drawable);
-                    recyclerView.addItemDecoration(dividerItemDecoration);
-                    recyclerView.setLayoutManager(layoutManagerProduct);
+                    if (getActivity() != null) {
+                        Context context = getActivity().getApplicationContext();
+                        Drawable drawable = ContextCompat.getDrawable(context, R.drawable.divider);
+                        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(), DividerItemDecoration.HORIZONTAL | DividerItemDecoration.VERTICAL);
+                        dividerItemDecoration.setDrawable(drawable);
+                        recyclerView.addItemDecoration(dividerItemDecoration);
+                        recyclerView.setLayoutManager(layoutManagerProduct);
+                    }
+
                     for(DocumentSnapshot snapshot:task.getResult()){
                         singleProduct = new Product(snapshot.get("product_name").toString(), snapshot.get("product_description").toString(), snapshot.get("product_price").toString(), snapshot.get("product_quantity").toString(), snapshot.get("product_category").toString(), snapshot.get("product_id").toString(), snapshot.get("user_id").toString(), Uri.parse(snapshot.get("product_img_url").toString()),sellerName);
                         dataList.add(singleProduct);
@@ -298,7 +312,7 @@ public class OrdersFragment extends Fragment implements  View.OnClickListener, P
                 intent.putExtra("productPrice",dataList.get(position).getProductPrice());
                 intent.putExtra("productDescription",dataList.get(position).getProductDesc());
                 intent.putExtra("productImageUrl",dataList.get(position).getProductImg().toString());
-                Toast.makeText(getActivity(), ""+ dataList.get(position).getSellerName(), Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getActivity(), ""+ dataList.get(position).getSellerName(), Toast.LENGTH_SHORT).show();
                 startActivity(intent);
 
             }
@@ -661,32 +675,24 @@ public class OrdersFragment extends Fragment implements  View.OnClickListener, P
 
         login = (TextView) view.findViewById(R.id.login);
         logout = (TextView) view.findViewById(R.id.logout);
-        bookmarks = (RelativeLayout) view.findViewById(R.id.relativeLayout3);
-        eightMMGold = (RelativeLayout) view.findViewById(R.id.relativeLayout4);
+
 
         your_orders = (TextView) view.findViewById(R.id.your_orders);
-        favourite_orders = (TextView) view.findViewById(R.id.favourite_orders);
-        address_book = (TextView) view.findViewById(R.id.address_book);
-        online_ordering_help = (TextView) view.findViewById(R.id.online_ordering_help);
-        send_feedback = (TextView) view.findViewById(R.id.send_feedback);
-        report_safety_emergency = (TextView) view.findViewById(R.id.report_safety_emergency);
-        rate_playstore = (TextView) view.findViewById(R.id.rate_playstore);
+        helpAndSupport = (TextView) view.findViewById(R.id.helpAndSupport);
+        termsAndConditions = (TextView) view.findViewById(R.id.termsAndConditions);
+        callCenter = (TextView) view.findViewById(R.id.callCenter);
 
 
 
         navigationBar.setOnClickListener(this);
         login.setOnClickListener(this);
         logout.setOnClickListener(this);
-        bookmarks.setOnClickListener(this);
-        eightMMGold.setOnClickListener(this);
+
 
         your_orders.setOnClickListener(this);
-        favourite_orders.setOnClickListener(this);
-        address_book.setOnClickListener(this);
-        online_ordering_help.setOnClickListener(this);
-        send_feedback.setOnClickListener(this);
-        report_safety_emergency.setOnClickListener(this);
-        rate_playstore.setOnClickListener(this);
+        helpAndSupport.setOnClickListener(this);
+        termsAndConditions.setOnClickListener(this);
+        callCenter.setOnClickListener(this);
 
     }
 
@@ -703,34 +709,20 @@ public class OrdersFragment extends Fragment implements  View.OnClickListener, P
             case R.id.logout:
                 Logout();
                 break;
-            case R.id.relativeLayout3:
-                Toast.makeText(getContext(),"bookmarks", Toast.LENGTH_SHORT).show();
-                break;
-            case R.id.relativeLayout4:
-                Toast.makeText(getContext(),"eightMMGold", Toast.LENGTH_SHORT).show();
-                break;
             case R.id.your_orders:
                 Intent intent1 = new Intent(getActivity(), Order.class);
                 startActivity(intent1);
-
                 break;
-            case R.id.favourite_orders:
-                Toast.makeText(getContext(),"favourite_orders", Toast.LENGTH_SHORT).show();
+            case R.id.helpAndSupport:
+                Intent intent2 = new Intent(getActivity(), HelpAndSupport.class);
+                startActivity(intent2);
                 break;
-            case R.id.address_book:
-                Toast.makeText(getContext(),"address_book", Toast.LENGTH_SHORT).show();
+            case R.id.termsAndConditions:
+                Intent intent3 = new Intent(getActivity(), TermsAndConditions.class);
+                startActivity(intent3);
                 break;
-            case R.id.online_ordering_help:
-                Toast.makeText(getContext(),"online_ordering_help", Toast.LENGTH_SHORT).show();
-                break;
-            case R.id.send_feedback:
-                Toast.makeText(getContext(),"send_feedback", Toast.LENGTH_SHORT).show();
-                break;
-            case R.id.report_safety_emergency:
-                Toast.makeText(getContext(),"report_safety_emergency", Toast.LENGTH_SHORT).show();
-                break;
-            case R.id.rate_playstore:
-                Toast.makeText(getContext(),"rate_playstore", Toast.LENGTH_SHORT).show();
+            case R.id.callCenter:
+                dialPhoneNumber(getContext());
                 break;
         }
     }
@@ -807,4 +799,11 @@ public class OrdersFragment extends Fragment implements  View.OnClickListener, P
         return searchResult;
     }
 
+    private void dialPhoneNumber(Context context) {
+        Intent intent = new Intent(Intent.ACTION_DIAL);
+        intent.setData(Uri.parse("tel:" + phoneNumber));
+        if (intent.resolveActivity(context.getPackageManager()) != null) {
+            startActivity(intent);
+        }
+    }
 }

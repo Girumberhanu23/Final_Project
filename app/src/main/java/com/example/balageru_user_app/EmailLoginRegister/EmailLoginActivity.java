@@ -1,6 +1,5 @@
 package com.example.balageru_user_app.EmailLoginRegister;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -9,6 +8,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -40,7 +40,8 @@ public class EmailLoginActivity extends AppCompatActivity {
     public static ApiInterface apiInterface;
     String user_id, user_name;
     SessionManager sessionManager;
-    ProgressDialog dialog;
+//    ProgressDialog dialog;
+    ProgressBar spinKit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,10 +54,10 @@ public class EmailLoginActivity extends AppCompatActivity {
         apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
         sessionManager = new SessionManager(this);
 
-        dialog = new ProgressDialog(this);
-        dialog.setTitle("Logging...");
-        dialog.setMessage("Please wait while we are checking your credentials");
-        dialog.setCanceledOnTouchOutside(false);
+//        dialog = new ProgressDialog(this);
+//        dialog.setTitle("Logging...");
+//        dialog.setMessage("Please wait while we are checking your credentials");
+//        dialog.setCanceledOnTouchOutside(false);
         init();
     }
 
@@ -64,11 +65,12 @@ public class EmailLoginActivity extends AppCompatActivity {
         email = (EditText) findViewById(R.id.email);
         password = (EditText) findViewById(R.id.password);
         btnLogin = (Button) findViewById(R.id.button2);
+        spinKit = findViewById(R.id.spinKit);
 
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                Login();
+                Login();
                 firebaseLogin(email.getText().toString(), password.getText().toString());
             }
         });
@@ -108,12 +110,14 @@ public class EmailLoginActivity extends AppCompatActivity {
 //                        startActivity(intent);
 //                        finish();
 //                        Animatoo.animateSwipeLeft(EmailLoginActivity.this)
-                        dialog.dismiss();
+//                        dialog.dismiss();
+                        spinKit.setVisibility(View.VISIBLE);
                     }
                     else if(response.body().getResponse().equals("no_account"))
                     {
                         Toast.makeText(EmailLoginActivity.this, "No Account Found!", Toast.LENGTH_SHORT).show();
-                        dialog.dismiss();
+//                        dialog.dismiss();
+                        spinKit.setVisibility(View.VISIBLE);
                     }
                 }
 
@@ -140,9 +144,11 @@ public class EmailLoginActivity extends AppCompatActivity {
 //        Animatoo.animateSwipeRight(this);
     }
     public void firebaseLogin(String email, String password){
-        dialog.show();
+//        dialog.show();
+        spinKit.setVisibility(View.VISIBLE);
         FirebaseAuth auth = FirebaseAuth.getInstance();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
+
         auth.signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
@@ -164,7 +170,8 @@ public class EmailLoginActivity extends AppCompatActivity {
 
 
                                     editor.commit();
-                                    dialog.dismiss();
+//                                    dialog.dismiss();
+                                    spinKit.setVisibility(View.VISIBLE);
                                     Intent intent = new Intent(EmailLoginActivity.this, HomeActivity.class);
                                     startActivity(intent);
                                 }
@@ -173,7 +180,8 @@ public class EmailLoginActivity extends AppCompatActivity {
                     });
                 }else{
                     Toast.makeText(EmailLoginActivity.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-                    dialog.dismiss();
+//                    dialog.dismiss();
+                    spinKit.setVisibility(View.VISIBLE);
                 }
 
 

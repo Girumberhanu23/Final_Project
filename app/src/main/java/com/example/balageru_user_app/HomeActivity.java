@@ -71,9 +71,5 @@ public class HomeActivity extends AppCompatActivity {
         //////////////replacing by default fragment on home activity///////////////
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
 
-    }
 }

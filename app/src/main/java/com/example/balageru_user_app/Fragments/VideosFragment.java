@@ -2,23 +2,28 @@ package com.example.balageru_user_app.Fragments;
 
 import static android.content.Context.MODE_PRIVATE;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 
+import com.example.balageru_user_app.HelpAndSupport;
 import com.example.balageru_user_app.MainActivity;
+import com.example.balageru_user_app.Order;
 import com.example.balageru_user_app.R;
 import com.example.balageru_user_app.Sessions.SessionManager;
+import com.example.balageru_user_app.TermsAndConditions;
 import com.google.android.material.navigation.NavigationView;
 
 /**
@@ -36,10 +41,13 @@ public class VideosFragment extends Fragment implements  View.OnClickListener {
     ImageView navigationBar;
     NavigationView navigationView;
     private View view;
-    private RelativeLayout bookmarks, eightMMGold;
-    private TextView your_orders, favourite_orders, address_book, online_ordering_help, send_feedback, report_safety_emergency, rate_playstore;
+    private TextView your_orders, helpAndSupport, termsAndConditions, callCenter;
     SessionManager sessionManager;
     private TextView login, logout, name, email, phone, city, subCity;
+    LinearLayout profileLogout, profileHelpAndSupport, profileTermsAndConditions;
+
+
+    private String phoneNumber = "0923938609";
 
 
 
@@ -62,6 +70,9 @@ public class VideosFragment extends Fragment implements  View.OnClickListener {
         city.setText(user_id_stored.getString("userCity", null));
         subCity.setText(user_id_stored.getString("userSubcity", null));
 
+        profileLogout = view.findViewById(R.id.profileLogout);
+        helpAndSupport = view.findViewById(R.id.helpAndSupport);
+        termsAndConditions = view.findViewById(R.id.termsAndConditions);
 
         onSetNavigationDrawerEvents();
         return view;
@@ -76,32 +87,28 @@ public class VideosFragment extends Fragment implements  View.OnClickListener {
 
         login = (TextView) view.findViewById(R.id.login);
         logout = (TextView) view.findViewById(R.id.logout);
-        bookmarks = (RelativeLayout) view.findViewById(R.id.relativeLayout3);
-        eightMMGold = (RelativeLayout) view.findViewById(R.id.relativeLayout4);
+
 
         your_orders = (TextView) view.findViewById(R.id.your_orders);
-        favourite_orders = (TextView) view.findViewById(R.id.favourite_orders);
-        address_book = (TextView) view.findViewById(R.id.address_book);
-        online_ordering_help = (TextView) view.findViewById(R.id.online_ordering_help);
-        send_feedback = (TextView) view.findViewById(R.id.send_feedback);
-        report_safety_emergency = (TextView) view.findViewById(R.id.report_safety_emergency);
-        rate_playstore = (TextView) view.findViewById(R.id.rate_playstore);
+        profileHelpAndSupport = (LinearLayout) view.findViewById(R.id.profileHelpAndSupport);
+        profileTermsAndConditions = (LinearLayout) view.findViewById(R.id.profileTermsAndConditions);
+        callCenter = (TextView) view.findViewById(R.id.callCenter);
 
 
 
         navigationBar.setOnClickListener(this);
         login.setOnClickListener(this);
         logout.setOnClickListener(this);
-        bookmarks.setOnClickListener(this);
-        eightMMGold.setOnClickListener(this);
+
 
         your_orders.setOnClickListener(this);
-        favourite_orders.setOnClickListener(this);
-        address_book.setOnClickListener(this);
-        online_ordering_help.setOnClickListener(this);
-        send_feedback.setOnClickListener(this);
-        report_safety_emergency.setOnClickListener(this);
-        rate_playstore.setOnClickListener(this);
+        profileLogout.setOnClickListener(this);
+        helpAndSupport.setOnClickListener(this);
+        termsAndConditions.setOnClickListener(this);
+        profileHelpAndSupport.setOnClickListener(this);
+        profileTermsAndConditions.setOnClickListener(this);
+        termsAndConditions.setOnClickListener(this);
+        callCenter.setOnClickListener(this);
 
     }
 
@@ -115,35 +122,27 @@ public class VideosFragment extends Fragment implements  View.OnClickListener {
                 Login();
                 break;
             case R.id.logout:
+            case R.id.profileLogout:
                 Logout();
                 break;
-            case R.id.relativeLayout3:
-                Toast.makeText(getContext(),"bookmarks", Toast.LENGTH_SHORT).show();
-                break;
-            case R.id.relativeLayout4:
-                Toast.makeText(getContext(),"eightMMGold", Toast.LENGTH_SHORT).show();
-                break;
             case R.id.your_orders:
-                Toast.makeText(getContext(),"your_orders", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(getActivity(), Order.class);
+                startActivity(intent);
                 break;
-            case R.id.favourite_orders:
-                Toast.makeText(getContext(),"favourite_orders", Toast.LENGTH_SHORT).show();
+            case R.id.helpAndSupport:
+            case R.id.profileHelpAndSupport:
+                Intent intent1 = new Intent(getActivity(), HelpAndSupport.class);
+                startActivity(intent1);
                 break;
-            case R.id.address_book:
-                Toast.makeText(getContext(),"address_book", Toast.LENGTH_SHORT).show();
+            case R.id.termsAndConditions:
+            case R.id.profileTermsAndConditions:
+                Intent intent2 = new Intent(getActivity(), TermsAndConditions.class);
+                startActivity(intent2);
                 break;
-            case R.id.online_ordering_help:
-                Toast.makeText(getContext(),"online_ordering_help", Toast.LENGTH_SHORT).show();
+            case R.id.callCenter:
+                dialPhoneNumber(getContext());
                 break;
-            case R.id.send_feedback:
-                Toast.makeText(getContext(),"send_feedback", Toast.LENGTH_SHORT).show();
-                break;
-            case R.id.report_safety_emergency:
-                Toast.makeText(getContext(),"report_safety_emergency", Toast.LENGTH_SHORT).show();
-                break;
-            case R.id.rate_playstore:
-                Toast.makeText(getContext(),"rate_playstore", Toast.LENGTH_SHORT).show();
-                break;
+
         }
     }
 
@@ -158,7 +157,7 @@ public class VideosFragment extends Fragment implements  View.OnClickListener {
 
         Intent intent = new Intent(getContext(), MainActivity.class);
         startActivity(intent);
-        getActivity().finish();
+
 //        Animatoo.animateSwipeRight(getContext());
     }
     private void Login() {
@@ -180,4 +179,11 @@ public class VideosFragment extends Fragment implements  View.OnClickListener {
         }
     }
 
+    private void dialPhoneNumber(Context context) {
+        Intent intent = new Intent(Intent.ACTION_DIAL);
+        intent.setData(Uri.parse("tel:" + phoneNumber));
+        if (intent.resolveActivity(context.getPackageManager()) != null) {
+            startActivity(intent);
+        }
+    }
 }

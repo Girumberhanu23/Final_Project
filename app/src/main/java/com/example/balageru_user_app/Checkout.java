@@ -15,12 +15,14 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.balageru_user_app.Adapters.CartAdapter;
+import com.example.balageru_user_app.Fragments.CartFragment;
 import com.example.balageru_user_app.Product.Cart;
 import com.example.balageru_user_app.Product.Payment;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -41,7 +43,7 @@ public class Checkout extends AppCompatActivity {
     CartAdapter adapter;
     Button confirmOrder;
     TextView checkTotalPrice;
-
+    AppCompatImageButton back;
     ArrayList<Cart> checkoutList=new ArrayList<>();
 
     @Override
@@ -59,7 +61,7 @@ public class Checkout extends AppCompatActivity {
         String totalPrice = getIntent().getStringExtra("TotalPrice");
         checkTotalPrice.setText(totalPrice +"\t ETB");
 
-//        back = findViewById(R.id.back);
+        back = findViewById(R.id.back);
 
         LinearLayoutManager layoutManager=new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false);
         recyclerViewCheckout.setLayoutManager(layoutManager);
@@ -98,6 +100,13 @@ public class Checkout extends AppCompatActivity {
             }
         });
 
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Checkout.this, CartFragment.class);
+                startActivity(intent);
+            }
+        });
         confirmOrder.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

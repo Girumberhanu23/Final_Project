@@ -1,19 +1,20 @@
 package com.example.balageru_user_app;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
+import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.balageru_user_app.Adapters.PlateAdapter;
 import com.example.balageru_user_app.EmailLoginRegister.EmailLoginActivity;
-import com.example.balageru_user_app.Models.CategoryModel;
+import com.example.balageru_user_app.Models.BannerModel;
 import com.example.balageru_user_app.OperationRetrofitApi.ApiClient;
 import com.example.balageru_user_app.OperationRetrofitApi.ApiInterface;
 import com.example.balageru_user_app.OperationRetrofitApi.Users;
@@ -30,9 +31,11 @@ import retrofit2.Response;
 public class MainActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
-    private List<CategoryModel> plateModelList;
+    private List<BannerModel> plateModelList;
     private PlateAdapter plateAdapter;
     private LinearLayout emailContinue, phoneContinue;
+    TextView textView;
+
     SessionManager sessionManager;
 
     ///////////////api's calling////////////////
@@ -51,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         //////////////////hide status bar end///////////////////
 
+        textView = (TextView) findViewById(R.id.textView);
 
         emailContinue= (LinearLayout) findViewById(R.id.linear2);
         phoneContinue= (LinearLayout) findViewById(R.id.linear1);
@@ -62,12 +66,12 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setHasFixedSize(true);
 
         plateModelList = new ArrayList<>();
-        Call<Users> categoryCall = apiInterface.getCategories();
-        categoryCall.enqueue(new Callback<Users>() {
+        Call<Users> bannerCall = apiInterface.getBanners();
+        bannerCall.enqueue(new Callback<Users>() {
             @Override
             public void onResponse(Call<Users> call, Response<Users> response) {
 
-                plateModelList = response.body().getCategory();
+                plateModelList = response.body().getBanners();
 
                 plateAdapter = new PlateAdapter(plateModelList, getApplicationContext());
                 recyclerView.setAdapter(plateAdapter);
@@ -108,6 +112,15 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         ////////////continue with Phone end/////////////
+
+        textView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, TermsAndConditions.class);
+                startActivity(intent);
+            }
+        });
+
     }
 
     public void autoScroll(){
